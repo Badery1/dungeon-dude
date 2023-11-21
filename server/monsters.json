@@ -1,0 +1,902 @@
+[
+    {
+        "level": 1,
+        "name": "Slime",
+        "strength": 5,
+        "vitality": 5,
+        "speed": 5,
+        "max_hp": 50,
+        "current_hp": 50
+    },
+    {
+        "level": 2,
+        "name": "Buffer Slime",
+        "strength": 5,
+        "vitality": 5,
+        "speed": 5,
+        "max_hp": 55,
+        "current_hp": 55
+    },
+    {
+        "level": 3,
+        "name": "Swull Slime",
+        "strength": 6,
+        "vitality": 6,
+        "speed": 5,
+        "max_hp": 61,
+        "current_hp": 61
+    },
+    {
+        "level": 4,
+        "name": "Jacked Slime",
+        "strength": 6,
+        "vitality": 6,
+        "speed": 5,
+        "max_hp": 67,
+        "current_hp": 67
+    },
+    {
+        "level": 5,
+        "name": "Slime Baws",
+        "strength": 7,
+        "vitality": 7,
+        "speed": 6,
+        "max_hp": 84,
+        "current_hp": 84
+    },
+    {
+        "level": 6,
+        "name": "Chicken",
+        "strength": 6,
+        "vitality": 6,
+        "speed": 6,
+        "max_hp": 81,
+        "current_hp": 81
+    },
+    {
+        "level": 7,
+        "name": "Angry Chicken",
+        "strength": 7,
+        "vitality": 7,
+        "speed": 6,
+        "max_hp": 89,
+        "current_hp": 89
+    },
+    {
+        "level": 8,
+        "name": "Angrier Chicken",
+        "strength": 7,
+        "vitality": 7,
+        "speed": 6,
+        "max_hp": 97,
+        "current_hp": 97
+    },
+    {
+        "level": 9,
+        "name": "Furious Chicken",
+        "strength": 7,
+        "vitality": 7,
+        "speed": 6,
+        "max_hp": 107,
+        "current_hp": 107
+    },
+    {
+        "level": 10,
+        "name": "Silently Judging Chicken",
+        "strength": 9,
+        "vitality": 9,
+        "speed": 8,
+        "max_hp": 136,
+        "current_hp": 136
+    },
+    {
+        "level": 11,
+        "name": "Rat",
+        "strength": 8,
+        "vitality": 8,
+        "speed": 7,
+        "max_hp": 130,
+        "current_hp": 130
+    },
+    {
+        "level": 12,
+        "name": "Smelly Rat",
+        "strength": 9,
+        "vitality": 9,
+        "speed": 7,
+        "max_hp": 143,
+        "current_hp": 143
+    },
+    {
+        "level": 13,
+        "name": "Rat with big teeth",
+        "strength": 9,
+        "vitality": 9,
+        "speed": 7,
+        "max_hp": 157,
+        "current_hp": 157
+    },
+    {
+        "level": 14,
+        "name": "Rat but more rat",
+        "strength": 9,
+        "vitality": 9,
+        "speed": 7,
+        "max_hp": 173,
+        "current_hp": 173
+    },
+    {
+        "level": 15,
+        "name": "Rattest Rat",
+        "strength": 11,
+        "vitality": 11,
+        "speed": 9,
+        "max_hp": 218,
+        "current_hp": 218
+    },
+    {
+        "level": 16,
+        "name": "Goblin",
+        "strength": 10,
+        "vitality": 10,
+        "speed": 8,
+        "max_hp": 209,
+        "current_hp": 209
+    },
+    {
+        "level": 17,
+        "name": "Buff Goblin",
+        "strength": 11,
+        "vitality": 11,
+        "speed": 8,
+        "max_hp": 230,
+        "current_hp": 230
+    },
+    {
+        "level": 18,
+        "name": "Swull Goblin",
+        "strength": 11,
+        "vitality": 11,
+        "speed": 8,
+        "max_hp": 253,
+        "current_hp": 253
+    },
+    {
+        "level": 19,
+        "name": "Jacked Goblin",
+        "strength": 12,
+        "vitality": 12,
+        "speed": 9,
+        "max_hp": 278,
+        "current_hp": 278
+    },
+    {
+        "level": 20,
+        "name": "Intelligent Goblin",
+        "strength": 15,
+        "vitality": 15,
+        "speed": 10,
+        "max_hp": 352,
+        "current_hp": 352
+    },
+    {
+        "level": 21,
+        "name": "Zombie",
+        "strength": 13,
+        "vitality": 13,
+        "speed": 9,
+        "max_hp": 336,
+        "current_hp": 336
+    },
+    {
+        "level": 22,
+        "name": "Faster Zombie",
+        "strength": 14,
+        "vitality": 14,
+        "speed": 9,
+        "max_hp": 370,
+        "current_hp": 370
+    },
+    {
+        "level": 23,
+        "name": "Slower Zombie but stronger",
+        "strength": 15,
+        "vitality": 15,
+        "speed": 10,
+        "max_hp": 407,
+        "current_hp": 407
+    },
+    {
+        "level": 24,
+        "name": "Just a zombie",
+        "strength": 15,
+        "vitality": 15,
+        "speed": 10,
+        "max_hp": 448,
+        "current_hp": 448
+    },
+    {
+        "level": 25,
+        "name": "Zombie with fake nails",
+        "strength": 19,
+        "vitality": 19,
+        "speed": 12,
+        "max_hp": 566,
+        "current_hp": 566
+    },
+    {
+        "level": 26,
+        "name": "Wolf",
+        "strength": 17,
+        "vitality": 17,
+        "speed": 10,
+        "max_hp": 542,
+        "current_hp": 542
+    },
+    {
+        "level": 27,
+        "name": "Feral Wolf",
+        "strength": 18,
+        "vitality": 18,
+        "speed": 11,
+        "max_hp": 596,
+        "current_hp": 596
+    },
+    {
+        "level": 28,
+        "name": "Spiky wolf",
+        "strength": 19,
+        "vitality": 19,
+        "speed": 11,
+        "max_hp": 655,
+        "current_hp": 655
+    },
+    {
+        "level": 29,
+        "name": "Wolf but cute",
+        "strength": 20,
+        "vitality": 20,
+        "speed": 11,
+        "max_hp": 721,
+        "current_hp": 721
+    },
+    {
+        "level": 30,
+        "name": "Wolf dad",
+        "strength": 24,
+        "vitality": 24,
+        "speed": 14,
+        "max_hp": 912,
+        "current_hp": 912
+    },
+    {
+        "level": 31,
+        "name": "Harpy",
+        "strength": 22,
+        "vitality": 22,
+        "speed": 12,
+        "max_hp": 872,
+        "current_hp": 872
+    },
+    {
+        "level": 32,
+        "name": "Harpy with bangs",
+        "strength": 23,
+        "vitality": 23,
+        "speed": 13,
+        "max_hp": 960,
+        "current_hp": 960
+    },
+    {
+        "level": 33,
+        "name": "Hairless Harpy",
+        "strength": 24,
+        "vitality": 24,
+        "speed": 13,
+        "max_hp": 1056,
+        "current_hp": 1056
+    },
+    {
+        "level": 34,
+        "name": "Depressed Harpy",
+        "strength": 25,
+        "vitality": 25,
+        "speed": 13,
+        "max_hp": 1161,
+        "current_hp": 1161
+    },
+    {
+        "level": 35,
+        "name": "Harpy thats kinda hot",
+        "strength": 30,
+        "vitality": 30,
+        "speed": 16,
+        "max_hp": 1469,
+        "current_hp": 1469
+    },
+    {
+        "level": 36,
+        "name": "Snowman",
+        "strength": 28,
+        "vitality": 28,
+        "speed": 14,
+        "max_hp": 1405,
+        "current_hp": 1405
+    },
+    {
+        "level": 37,
+        "name": "Wicked Snowman",
+        "strength": 29,
+        "vitality": 29,
+        "speed": 14,
+        "max_hp": 1546,
+        "current_hp": 1546
+    },
+    {
+        "level": 38,
+        "name": "Melting Snowman",
+        "strength": 30,
+        "vitality": 30,
+        "speed": 15,
+        "max_hp": 1700,
+        "current_hp": 1700
+    },
+    {
+        "level": 39,
+        "name": "Snowman with teeth",
+        "strength": 32,
+        "vitality": 32,
+        "speed": 15,
+        "max_hp": 1870,
+        "current_hp": 1870
+    },
+    {
+        "level": 40,
+        "name": "Tophat Snowman",
+        "strength": 39,
+        "vitality": 39,
+        "speed": 18,
+        "max_hp": 2366,
+        "current_hp": 2366
+    },
+    {
+        "level": 41,
+        "name": "Pile of Mud",
+        "strength": 35,
+        "vitality": 35,
+        "speed": 16,
+        "max_hp": 2263,
+        "current_hp": 2263
+    },
+    {
+        "level": 42,
+        "name": "Mud with a face",
+        "strength": 37,
+        "vitality": 37,
+        "speed": 17,
+        "max_hp": 2489,
+        "current_hp": 2489
+    },
+    {
+        "level": 43,
+        "name": "Mud but different",
+        "strength": 39,
+        "vitality": 39,
+        "speed": 17,
+        "max_hp": 2738,
+        "current_hp": 2738
+    },
+    {
+        "level": 44,
+        "name": "Hardened Mud",
+        "strength": 41,
+        "vitality": 41,
+        "speed": 18,
+        "max_hp": 3012,
+        "current_hp": 3012
+    },
+    {
+        "level": 45,
+        "name": "Sticky Mud",
+        "strength": 49,
+        "vitality": 49,
+        "speed": 21,
+        "max_hp": 3810,
+        "current_hp": 3810
+    },
+    {
+        "level": 46,
+        "name": "Snake",
+        "strength": 45,
+        "vitality": 45,
+        "speed": 19,
+        "max_hp": 3645,
+        "current_hp": 3645
+    },
+    {
+        "level": 47,
+        "name": "Longer Snake",
+        "strength": 47,
+        "vitality": 47,
+        "speed": 19,
+        "max_hp": 4009,
+        "current_hp": 4009
+    },
+    {
+        "level": 48,
+        "name": "Three Eyed Snake",
+        "strength": 50,
+        "vitality": 50,
+        "speed": 20,
+        "max_hp": 4410,
+        "current_hp": 4410
+    },
+    {
+        "level": 49,
+        "name": "Snake snake",
+        "strength": 52,
+        "vitality": 52,
+        "speed": 21,
+        "max_hp": 4851,
+        "current_hp": 4851
+    },
+    {
+        "level": 50,
+        "name": "Big Ass Snake",
+        "strength": 63,
+        "vitality": 63,
+        "speed": 24,
+        "max_hp": 6136,
+        "current_hp": 6136
+    },
+    {
+        "level": 51,
+        "name": "The Slime from earlier",
+        "strength": 57,
+        "vitality": 57,
+        "speed": 22,
+        "max_hp": 5870,
+        "current_hp": 5870
+    },
+    {
+        "level": 52,
+        "name": "Same Slime but mad",
+        "strength": 60,
+        "vitality": 60,
+        "speed": 23,
+        "max_hp": 6456,
+        "current_hp": 6456
+    },
+    {
+        "level": 53,
+        "name": "This Slime wont go away",
+        "strength": 63,
+        "vitality": 63,
+        "speed": 23,
+        "max_hp": 7102,
+        "current_hp": 7102
+    },
+    {
+        "level": 54,
+        "name": "This Slime is pissed",
+        "strength": 66,
+        "vitality": 66,
+        "speed": 24,
+        "max_hp": 7812,
+        "current_hp": 7812
+    },
+    {
+        "level": 55,
+        "name": "Slime Lord",
+        "strength": 80,
+        "vitality": 80,
+        "speed": 28,
+        "max_hp": 9883,
+        "current_hp": 9883
+    },
+    {
+        "level": 56,
+        "name": "Living Flame",
+        "strength": 73,
+        "vitality": 73,
+        "speed": 25,
+        "max_hp": 9453,
+        "current_hp": 9453
+    },
+    {
+        "level": 57,
+        "name": "Fiery Flame",
+        "strength": 77,
+        "vitality": 77,
+        "speed": 26,
+        "max_hp": 10398,
+        "current_hp": 10398
+    },
+    {
+        "level": 58,
+        "name": "Flame Flamingson",
+        "strength": 81,
+        "vitality": 81,
+        "speed": 27,
+        "max_hp": 11438,
+        "current_hp": 11438
+    },
+    {
+        "level": 59,
+        "name": "Flam-chop",
+        "strength": 85,
+        "vitality": 85,
+        "speed": 28,
+        "max_hp": 12582,
+        "current_hp": 12582
+    },
+    {
+        "level": 60,
+        "name": "Fire Boss",
+        "strength": 102,
+        "vitality": 102,
+        "speed": 33,
+        "max_hp": 15916,
+        "current_hp": 15916
+    },
+    {
+        "level": 61,
+        "name": "Living Armor",
+        "strength": 93,
+        "vitality": 93,
+        "speed": 29,
+        "max_hp": 15224,
+        "current_hp": 15224
+    },
+    {
+        "level": 62,
+        "name": "Armor with a sword",
+        "strength": 98,
+        "vitality": 98,
+        "speed": 30,
+        "max_hp": 16746,
+        "current_hp": 16746
+    },
+    {
+        "level": 63,
+        "name": "Armor with two swords",
+        "strength": 103,
+        "vitality": 103,
+        "speed": 31,
+        "max_hp": 18421,
+        "current_hp": 18421
+    },
+    {
+        "level": 64,
+        "name": "Armor with three swords?",
+        "strength": 108,
+        "vitality": 108,
+        "speed": 32,
+        "max_hp": 20263,
+        "current_hp": 20263
+    },
+    {
+        "level": 65,
+        "name": "This armor is just swords",
+        "strength": 131,
+        "vitality": 131,
+        "speed": 38,
+        "max_hp": 25633,
+        "current_hp": 25633
+    },
+    {
+        "level": 66,
+        "name": "Shadow",
+        "strength": 119,
+        "vitality": 119,
+        "speed": 34,
+        "max_hp": 24519,
+        "current_hp": 24519
+    },
+    {
+        "level": 67,
+        "name": "Darker Shadow",
+        "strength": 125,
+        "vitality": 125,
+        "speed": 35,
+        "max_hp": 26970,
+        "current_hp": 26970
+    },
+    {
+        "level": 68,
+        "name": "Two Shadows",
+        "strength": 131,
+        "vitality": 131,
+        "speed": 36,
+        "max_hp": 29667,
+        "current_hp": 29667
+    },
+    {
+        "level": 69,
+        "name": "Shadow with a hat",
+        "strength": 138,
+        "vitality": 138,
+        "speed": 37,
+        "max_hp": 32634,
+        "current_hp": 32634
+    },
+    {
+        "level": 70,
+        "name": "Shadow's Shadow",
+        "strength": 167,
+        "vitality": 167,
+        "speed": 44,
+        "max_hp": 41282,
+        "current_hp": 41282
+    },
+    {
+        "level": 71,
+        "name": "Green Dragon",
+        "strength": 152,
+        "vitality": 152,
+        "speed": 40,
+        "max_hp": 39487,
+        "current_hp": 39487
+    },
+    {
+        "level": 72,
+        "name": "Greener Dragon",
+        "strength": 160,
+        "vitality": 160,
+        "speed": 41,
+        "max_hp": 43436,
+        "current_hp": 43436
+    },
+    {
+        "level": 73,
+        "name": "Dark green dragon",
+        "strength": 168,
+        "vitality": 168,
+        "speed": 42,
+        "max_hp": 47780,
+        "current_hp": 47780
+    },
+    {
+        "level": 74,
+        "name": "Ever darker green Dragon",
+        "strength": 176,
+        "vitality": 176,
+        "speed": 43,
+        "max_hp": 52558,
+        "current_hp": 52558
+    },
+    {
+        "level": 75,
+        "name": "Is this even green Dragon",
+        "strength": 213,
+        "vitality": 213,
+        "speed": 51,
+        "max_hp": 66485,
+        "current_hp": 66485
+    },
+    {
+        "level": 76,
+        "name": "Basic Demon",
+        "strength": 194,
+        "vitality": 194,
+        "speed": 46,
+        "max_hp": 63595,
+        "current_hp": 63595
+    },
+    {
+        "level": 77,
+        "name": "Less Basic Demon",
+        "strength": 204,
+        "vitality": 204,
+        "speed": 47,
+        "max_hp": 69954,
+        "current_hp": 69954
+    },
+    {
+        "level": 78,
+        "name": "Demon with Hat",
+        "strength": 214,
+        "vitality": 214,
+        "speed": 49,
+        "max_hp": 76950,
+        "current_hp": 76950
+    },
+    {
+        "level": 79,
+        "name": "Same demon but wearing monocle",
+        "strength": 225,
+        "vitality": 225,
+        "speed": 50,
+        "max_hp": 84645,
+        "current_hp": 84645
+    },
+    {
+        "level": 80,
+        "name": "Your dad",
+        "strength": 271,
+        "vitality": 271,
+        "speed": 59,
+        "max_hp": 107075,
+        "current_hp": 107075
+    },
+    {
+        "level": 81,
+        "name": "Hospital Bill",
+        "strength": 248,
+        "vitality": 248,
+        "speed": 53,
+        "max_hp": 102420,
+        "current_hp": 102420
+    },
+    {
+        "level": 82,
+        "name": "Hospital Bill in America",
+        "strength": 260,
+        "vitality": 260,
+        "speed": 55,
+        "max_hp": 112662,
+        "current_hp": 112662
+    },
+    {
+        "level": 83,
+        "name": "Same Bill but with Xrays",
+        "strength": 273,
+        "vitality": 273,
+        "speed": 56,
+        "max_hp": 123928,
+        "current_hp": 123928
+    },
+    {
+        "level": 84,
+        "name": "Hospital Bill + Ambulance Ride",
+        "strength": 287,
+        "vitality": 287,
+        "speed": 58,
+        "max_hp": 136321,
+        "current_hp": 136321
+    },
+    {
+        "level": 85,
+        "name": "No insurance Hospital Bill",
+        "strength": 346,
+        "vitality": 346,
+        "speed": 69,
+        "max_hp": 172446,
+        "current_hp": 172446
+    },
+    {
+        "level": 86,
+        "name": "Stone Golem",
+        "strength": 316,
+        "vitality": 316,
+        "speed": 62,
+        "max_hp": 164948,
+        "current_hp": 164948
+    },
+    {
+        "level": 87,
+        "name": "Iron Golem",
+        "strength": 332,
+        "vitality": 332,
+        "speed": 64,
+        "max_hp": 181443,
+        "current_hp": 181443
+    },
+    {
+        "level": 88,
+        "name": "Steel Golem",
+        "strength": 349,
+        "vitality": 349,
+        "speed": 65,
+        "max_hp": 199588,
+        "current_hp": 199588
+    },
+    {
+        "level": 89,
+        "name": "Adamantine Golem",
+        "strength": 366,
+        "vitality": 366,
+        "speed": 67,
+        "max_hp": 219546,
+        "current_hp": 219546
+    },
+    {
+        "level": 90,
+        "name": "Golem with a gun",
+        "strength": 442,
+        "vitality": 442,
+        "speed": 80,
+        "max_hp": 277726,
+        "current_hp": 277726
+    },
+    {
+        "level": 91,
+        "name": "Innocent Little Hydra",
+        "strength": 404,
+        "vitality": 404,
+        "speed": 72,
+        "max_hp": 265651,
+        "current_hp": 265651
+    },
+    {
+        "level": 92,
+        "name": "Leviathian",
+        "strength": 424,
+        "vitality": 424,
+        "speed": 74,
+        "max_hp": 292216,
+        "current_hp": 292216
+    },
+    {
+        "level": 93,
+        "name": "Gluttony",
+        "strength": 445,
+        "vitality": 445,
+        "speed": 76,
+        "max_hp": 321438,
+        "current_hp": 321438
+    },
+    {
+        "level": 94,
+        "name": "Sloth",
+        "strength": 467,
+        "vitality": 467,
+        "speed": 78,
+        "max_hp": 353582,
+        "current_hp": 353582
+    },
+    {
+        "level": 95,
+        "name": "Greed",
+        "strength": 564,
+        "vitality": 564,
+        "speed": 93,
+        "max_hp": 447281,
+        "current_hp": 447281
+    },
+    {
+        "level": 96,
+        "name": "Lust",
+        "strength": 515,
+        "vitality": 515,
+        "speed": 83,
+        "max_hp": 427834,
+        "current_hp": 427834
+    },
+    {
+        "level": 97,
+        "name": "Wrath",
+        "strength": 541,
+        "vitality": 541,
+        "speed": 85,
+        "max_hp": 470617,
+        "current_hp": 470617
+    },
+    {
+        "level": 98,
+        "name": "Envy",
+        "strength": 568,
+        "vitality": 568,
+        "speed": 88,
+        "max_hp": 517679,
+        "current_hp": 517679
+    },
+    {
+        "level": 99,
+        "name": "Pride",
+        "strength": 596,
+        "vitality": 596,
+        "speed": 91,
+        "max_hp": 569447,
+        "current_hp": 569447
+    },
+    {
+        "level": 100,
+        "name": "The First Dungeon Dude",
+        "strength": 1000,
+        "vitality": 1000,
+        "speed": 150,
+        "max_hp": 1000000,
+        "current_hp": 1000000
+    }
+]
