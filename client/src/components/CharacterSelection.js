@@ -19,10 +19,19 @@ const CharacterSelection = ({ onSelectCharacter }) => {
         }
     };
 
-    const handleCharacterSelect = (characterId) => {
-        console.log(`Character ${characterId} selected`);
-        onSelectCharacter(characterId);
-        navigate('/game');
+    const handleCharacterSelect = async (character) => {
+        try {
+            await axios.post(`/select_character/${character.id}`);
+            onSelectCharacter(character.id);
+    
+            if (!character.has_seen_intro) {
+                navigate(`/intro`);
+            } else {
+                navigate('/home');
+            }
+        } catch (error) {
+            console.error('Error selecting character:', error);
+        }
     };
 
     const handleUpdateCharacter = async (characterId, newName) => {
@@ -50,7 +59,7 @@ const CharacterSelection = ({ onSelectCharacter }) => {
             <h1>Select Your Character</h1>
             {characters.map((character) => (
                 <div key={character.id}>
-                    <h2 onClick={() => handleCharacterSelect(character.id)}>{character.name}</h2>
+                    <h2 onClick={() => handleCharacterSelect(character)}>{character.name}</h2>
                     <input 
                         type="text" 
                         defaultValue={character.name} 

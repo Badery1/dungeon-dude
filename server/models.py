@@ -77,6 +77,7 @@ class Character(db.Model, SerializerMixin):
     highest_dungeon_level = db.Column(db.Integer, default=0)
     location = db.Column(db.String, nullable=False, default='Home')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    has_seen_intro = db.Column(db.Boolean, default=False)
     
     equipped_melee_weapon_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     equipped_melee_weapon = db.relationship('Item', foreign_keys=[equipped_melee_weapon_id])
@@ -118,8 +119,12 @@ class Character(db.Model, SerializerMixin):
             'equipped_armor': self.equipped_armor.custom_serialize() if self.equipped_armor else None,
             'equipped_ring': self.equipped_ring.custom_serialize() if self.equipped_ring else None,
             'equipped_necklace': self.equipped_necklace.custom_serialize() if self.equipped_necklace else None,
+            'inventory': [item.custom_serialize() for item in self.inventory],
+            'quests': [character_quest.custom_serialize() for character_quest in self.quests],
+            'gold': self.gold,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'last_saved': self.last_saved.isoformat() if self.last_saved else None
+            'last_saved': self.last_saved.isoformat() if self.last_saved else None,
+            'has_seen_intro': self.has_seen_intro
         }
 
     def add_exp(self, amount):
@@ -221,7 +226,20 @@ class CharacterQuest(db.Model):
     character = db.relationship('Character', back_populates='quests')
     quest = db.relationship('Quest', back_populates='characters')
 
-    serialize_rules = ('-character', '-quest')
+    def custom_serialize(self):
+        return {
+            'id': self.quest_id,
+            'character_id': self.character_id,
+            'title': self.quest.title if self.quest else None,
+            'description': self.quest.description if self.quest else None,
+            'status': self.status,
+            'progress': self.progress,
+            'exp_reward': self.quest.exp_reward if self.quest else None,
+            'gold_reward': self.quest.gold_reward if self.quest else None,
+            'item_reward': self.quest.item_reward.custom_serialize() if self.quest and self.quest.item_reward else None,
+            'required_dungeon_level': self.quest.required_dungeon_level if self.quest else None,
+            'target_amount': self.quest.target_amount if self.quest else None
+        }
 
 # Table to handle monsters
 class Monster(db.Model, SerializerMixin):

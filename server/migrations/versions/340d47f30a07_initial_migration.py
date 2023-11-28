@@ -1,8 +1,8 @@
-"""Initial migrate
+"""Initial migration
 
-Revision ID: f7fca8b101c2
+Revision ID: 340d47f30a07
 Revises: 
-Create Date: 2023-11-20 13:33:31.355978
+Create Date: 2023-11-26 11:17:22.797607
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f7fca8b101c2'
+revision = '340d47f30a07'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -75,6 +75,7 @@ def upgrade():
     sa.Column('highest_dungeon_level', sa.Integer(), nullable=True),
     sa.Column('location', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('has_seen_intro', sa.Boolean(), nullable=True),
     sa.Column('equipped_melee_weapon_id', sa.Integer(), nullable=True),
     sa.Column('equipped_ranged_weapon_id', sa.Integer(), nullable=True),
     sa.Column('equipped_armor_id', sa.Integer(), nullable=True),

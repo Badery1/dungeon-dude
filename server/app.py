@@ -115,8 +115,8 @@ def delete_character(character_id):
     if 'user_id' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
-    character = db.session.query(Character).filter_by(id=character_id).first()
-    if character and character.user_id == session['user_id']:
+    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    if character:
         db.session.delete(character)
         db.session.commit()
         return jsonify({'message': 'Character deleted successfully'}), 200
@@ -143,8 +143,8 @@ def update_character(character_id):
     if 'user_id' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
-    character = Character.query.get(character_id)
-    if not character or character.user_id != session.get('user_id'):
+    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    if not character:
         return jsonify({'message': 'Character not found or unauthorized access'}), 404
 
     data = request.json
@@ -157,85 +157,148 @@ def update_character(character_id):
     return jsonify({'message': f'Character name updated to {new_name}'}), 200
 
 # Route to detail character information
-@app.route('/character/<int:character_id>', methods=['GET'])
-def get_character(character_id):
+@app.route('/character', methods=['GET'])
+def get_character():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not identified'}), 401
+
+    character_id = session['character_id']
     character = Character.query.get(character_id)
     if not character or character.user_id != session.get('user_id'):
         return jsonify({'message': 'Character not found'}), 404
 
     return jsonify(character.custom_serialize()), 200
 
-# Save game route
-@app.route('/save_game/<int:character_id>', methods=['POST'])
-def save_game(character_id):
+# Character selection route
+@app.route('/select_character/<int:character_id>', methods=['POST'])
+def select_character(character_id):
     if 'user_id' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
-    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    character = Character.query.get(character_id)
+    if not character or character.user_id != session['user_id']:
+        return jsonify({'message': 'Character not found or unauthorized'}), 404
 
-    if character is None:
+    session['character_id'] = character_id
+    return jsonify({'message': 'Character selected successfully'}), 200
+
+
+# Intro route
+@app.route('/character_seen_intro', methods=['POST'])
+def character_seen_intro():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
+    character = Character.query.get(session['character_id'])
+    if character and character.user_id == session['user_id']:
+        character.has_seen_intro = True
+        db.session.commit()
+        return jsonify({'message': 'Character intro updated successfully'}), 200
+    else:
+        return jsonify({'message': 'Character not found or unauthorized'}), 404
+
+# Save game route
+@app.route('/save_game', methods=['POST'])
+def save_game():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
+    character = Character.query.get(session['character_id'])
+    if not character:
         return jsonify({'message': 'Character not found'}), 404
 
     character.last_saved = datetime.utcnow()
-
     db.session.commit()
-    
-    return jsonify({'message': 'Game state saved successfully'}), 200
+    return jsonify({'message': 'Game saved'}), 200
 
 # Load game route
-@app.route('/load_game/<int:character_id>', methods=['GET'])
-def load_game(character_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+@app.route('/load_game', methods=['GET'])
+def load_game():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
 
-    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
-
-    if character is None:
+    character = Character.query.get(session['character_id'])
+    if not character:
         return jsonify({'message': 'Character not found'}), 404
 
     character_data = character.to_dict()
     character_data['inventory'] = [item.to_dict() for item in character.inventory]
     character_data['quests'] = [quest.to_dict() for quest in character.quests]
-
     return jsonify(character_data), 200
 
 # Start quest route
-@app.route('/character/<int:character_id>/start_quest/<int:quest_id>', methods=['POST'])
-def start_quest(character_id, quest_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+@app.route('/start_quest/<int:quest_id>', methods=['POST'])
+def start_quest(quest_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
 
-    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    character = Character.query.get(session['character_id'])
     quest = Quest.query.get(quest_id)
 
-    if character is None or quest is None:
+    if not character or not quest:
         return jsonify({'message': 'Character or quest not found'}), 404
 
     if quest.required_dungeon_level and character.highest_dungeon_level < quest.required_dungeon_level:
         return jsonify({'message': 'Dungeon level requirement not met for this quest'}), 400
 
-    existing_quest = CharacterQuest.query.filter_by(character_id=character_id, quest_id=quest_id).first()
+    active_quests = CharacterQuest.query.filter_by(character_id=character.id, status='In Progress').count()
+    if active_quests >= 5:
+        return jsonify({'message': 'Maximum number of active quests reached'}), 400
+
+    existing_quest = CharacterQuest.query.filter_by(character_id=character.id, quest_id=quest_id).first()
     if existing_quest:
         return jsonify({'message': 'Quest already started or completed'}), 400
 
-    new_quest = CharacterQuest(character_id=character_id, quest_id=quest_id, status='In Progress')
+    new_quest = CharacterQuest(character_id=character.id, quest_id=quest_id, status='In Progress')
     db.session.add(new_quest)
     db.session.commit()
 
     return jsonify({'message': f'Quest {quest.title} started successfully'}), 200
 
-# Quest complete route
-@app.route('/character/<int:character_id>/complete_quest/<int:quest_id>', methods=['POST'])
-def complete_quest(character_id, quest_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+# Update quest progress route
+@app.route('/update_quest/<int:quest_id>', methods=['PATCH'])
+def update_quest_progress(quest_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
 
-    character_quest = CharacterQuest.query.filter_by(character_id=character_id, quest_id=quest_id).first()
+    character_quest = CharacterQuest.query.filter_by(character_id=session['character_id'], quest_id=quest_id).first()
+    if character_quest is None or character_quest.status != 'In Progress':
+        return jsonify({'message': 'Quest not found or not in progress'}), 404
+
+    character_quest.progress += 1
+
+    if character_quest.progress >= character_quest.quest.target_amount:
+        character_quest.status = 'Completed'
+
+    db.session.commit()
+    return jsonify({'message': 'Quest progress updated'}), 200
+
+# Abandon quest route
+@app.route('/abandon_quest/<int:quest_id>', methods=['POST'])
+def abandon_quest(quest_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
+    character_quest = CharacterQuest.query.filter_by(character_id=session['character_id'], quest_id=quest_id).first()
+    if character_quest is None or character_quest.status != 'In Progress':
+        return jsonify({'message': 'Quest not found or not in progress'}), 404
+
+    db.session.delete(character_quest)
+    db.session.commit()
+    return jsonify({'message': 'Quest abandoned successfully'}), 200
+
+# Quest complete route
+@app.route('/complete_quest/<int:quest_id>', methods=['POST'])
+def complete_quest(quest_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
+    character_quest = CharacterQuest.query.filter_by(character_id=session['character_id'], quest_id=quest_id).first()
     if character_quest is None or character_quest.status != 'In Progress':
         return jsonify({'message': 'Quest not found or not in progress'}), 404
 
     quest = Quest.query.get(quest_id)
-    character = Character.query.get(character_id)
+    character = Character.query.get(session['character_id'])
 
     if quest.required_item_id and character.inventory.count(quest.required_item_id) < quest.target_amount:
         return jsonify({'message': 'Required items not collected'}), 400
@@ -255,12 +318,12 @@ def complete_quest(character_id, quest_id):
     }), 200
 
 # Add item to inventory route
-@app.route('/character/<int:character_id>/add_item/<int:item_id>', methods=['POST'])
-def add_item_to_inventory(character_id, item_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+@app.route('/add_item/<int:item_id>', methods=['POST'])
+def add_item_to_inventory(item_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
 
-    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    character = Character.query.get(session['character_id'])
     if character is None:
         return jsonify({'message': 'Character not found'}), 404
 
@@ -274,12 +337,12 @@ def add_item_to_inventory(character_id, item_id):
     return jsonify({'message': f'Item {item.name} added to inventory'}), 200
 
 # Remove item from inventory route
-@app.route('/character/<int:character_id>/remove_item/<int:item_id>', methods=['POST'])
-def remove_item_from_inventory(character_id, item_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+@app.route('/remove_item/<int:item_id>', methods=['POST'])
+def remove_item_from_inventory(item_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
 
-    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    character = Character.query.get(session['character_id'])
     if character is None:
         return jsonify({'message': 'Character not found'}), 404
 
@@ -292,6 +355,25 @@ def remove_item_from_inventory(character_id, item_id):
 
     return jsonify({'message': f'Item {item.name} removed from inventory'}), 200
 
+# Sell item route
+@app.route('/sell_item/<int:item_id>', methods=['POST'])
+def sell_item(item_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
+    character = Character.query.get(session['character_id'])
+    item = Item.query.get(item_id)
+
+    if character is None or item is None:
+        return jsonify({'message': 'Character or item not found'}), 404
+
+    character.gold += item.price
+
+    character.inventory.remove(item)
+    db.session.commit()
+
+    return jsonify({'message': f'Item {item.name} sold for {item.price} gold'}), 200
+
 # Npc interaction route
 @app.route('/npc/<int:npc_id>/interact', methods=['GET'])
 def interact_with_npc(npc_id):
@@ -299,8 +381,10 @@ def interact_with_npc(npc_id):
         return jsonify({'message': 'User or character not identified'}), 401
 
     npc = NPC.query.get(npc_id)
-    if npc is None:
-        return jsonify({'message': 'NPC not found'}), 404
+    character = Character.query.get(session['character_id'])
+
+    if npc is None or character is None:
+        return jsonify({'message': 'NPC or character not found'}), 404
 
     if npc.role == 'Quest Giver':
         available_quests = Quest.query.filter_by(npc_id=npc_id).all()
@@ -311,14 +395,22 @@ def interact_with_npc(npc_id):
         items_data = [item.to_dict() for item in npc.stock]
         return jsonify({'npc_name': npc.name, 'items_for_sale': items_data}), 200
     
+    elif npc.role == 'Guild Master':
+        sellable_items = [item for item in character.inventory if item.type == 'Monster Drop']
+        sellable_items_data = [item.custom_serialize() for item in sellable_items]
+        return jsonify({'npc_name': npc.name, 'sellable_items': sellable_items_data}), 200
+    
     else:
         return jsonify({'npc_name': npc.name, 'dialogue': npc.dialogue}), 200
     
 # Buy item route
-@app.route('/buy_item/<int:npc_id>/<int:character_id>/<int:item_id>', methods=['POST'])
-def buy_item(npc_id, character_id, item_id):
+@app.route('/buy_item/<int:npc_id>/<int:item_id>', methods=['POST'])
+def buy_item(npc_id, item_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
     npc = NPC.query.get(npc_id)
-    character = Character.query.get(character_id)
+    character = Character.query.get(session['character_id'])
     item = Item.query.get(item_id)
 
     if item not in npc.stock:
@@ -334,12 +426,12 @@ def buy_item(npc_id, character_id, item_id):
     return jsonify({'message': f'Bought {item.name} for {item.price} gold'}), 200
     
 # Combat start route
-@app.route('/character/<int:character_id>/initiate_combat', methods=['POST'])
-def initiate_combat(character_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+@app.route('/initiate_combat', methods=['POST'])
+def initiate_combat():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
 
-    character = Character.query.filter_by(id=character_id, user_id=session['user_id']).first()
+    character = Character.query.get(session['character_id'])
     if character is None:
         return jsonify({'message': 'Character not found'}), 404
 
@@ -358,13 +450,16 @@ def initiate_combat(character_id):
     return jsonify({'message': 'Combat initiated', 'combat_state': combat_state}), 200
 
 # Combat logic route for player route
-@app.route('/character/<int:character_id>/player_combat_action', methods=['POST'])
-def player_combat_action(character_id):
+@app.route('/player_combat_action', methods=['POST'])
+def player_combat_action():
     if 'user_id' not in session or 'combat_state' not in session or session['combat_state']['turn'] != 'Character':
         return jsonify({'message': 'Not your turn or not logged in'}), 401
 
-    character = Character.query.get(character_id)
+    character = Character.query.get(session['combat_state']['character_id'])
     monster = Monster.query.get(session['combat_state']['monster_id'])
+
+    if not character or not monster:
+        return jsonify({'message': 'Character or Monster not found'}), 404
 
     action = request.json.get('action')
     item_id = request.json.get('item_id', None)
@@ -391,10 +486,12 @@ def player_combat_action(character_id):
             session['combat_state']['turn'] = 'Monster'
 
     elif action == 'Use Consumable':
-        outcome = use_consumable(character_id, item_id)
+        item_id = request.json.get('item_id')
+        outcome = handle_consumable_use(character, item_id)
 
     elif action == 'Change Equipment':
-        outcome = change_equipment(character_id)
+        new_equipment_id = request.json.get('item_id')
+        return handle_equipment_change(character, new_equipment_id)
 
     elif action == 'Flee':
         flee_chance = 0.50 + character.speed / 1000.0
@@ -410,13 +507,83 @@ def player_combat_action(character_id):
     db.session.commit()
     return jsonify({'message': 'Player action processed', 'outcome': outcome}), 200
 
+def handle_equipment_change(character, new_equipment_id):
+    if new_equipment_id is None:
+        return remove_current_equipment(character)
+
+    new_equipment = next((item for item in character.inventory if item.id == new_equipment_id), None)
+    if not new_equipment:
+        return jsonify({'message': 'Invalid or unavailable equipment'}), 404
+
+    equipment_slots = {
+        'Melee Weapon': 'equipped_melee_weapon',
+        'Ranged Weapon': 'equipped_ranged_weapon',
+        'Armor': 'equipped_armor',
+        'Ring': 'equipped_ring',
+        'Necklace': 'equipped_necklace'
+    }
+
+    slot = equipment_slots.get(new_equipment.type)
+    if slot:
+        swap_equipment(character, slot, new_equipment)
+        db.session.commit()
+        return jsonify({'message': f'Equipped {new_equipment.name} successfully'}), 200
+    else:
+        return jsonify({'message': 'Unrecognized equipment type'}), 400
+
+def remove_current_equipment(character):
+    equipment_slots = ['equipped_melee_weapon', 'equipped_ranged_weapon', 'equipped_armor', 'equipped_ring', 'equipped_necklace']
+    for slot in equipment_slots:
+        current_equipped = getattr(character, slot)
+        if current_equipped:
+            update_stats(character, current_equipped, apply_bonus=False)
+            character.inventory.append(current_equipped)
+            setattr(character, slot, None)
+
+    db.session.commit()
+    return jsonify({'message': 'Equipment removed successfully'}), 200
+
+def swap_equipment(character, slot, new_item=None):
+    current_equipped = getattr(character, slot)
+
+    if current_equipped:
+        update_stats(character, current_equipped, apply_bonus=False)
+        character.inventory.append(current_equipped)
+
+    if new_item:
+        setattr(character, slot, new_item)
+        update_stats(character, new_item, apply_bonus=True)
+        character.inventory.remove(new_item)
+
+def update_stats(character, item, apply_bonus=True):
+    modifiers = ['strength_bonus', 'vitality_bonus', 'armor_bonus', 'luck_bonus', 'dexterity_bonus', 'speed_bonus']
+    for mod in modifiers:
+        bonus = getattr(item, mod)
+        if apply_bonus:
+            setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) + bonus)
+        else:
+            setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) - bonus)
+
+def handle_consumable_use(character, item_id):
+    consumable = next((item for item in character.inventory if item.id == item_id and item.type == 'Consumable'), None)
+    if not consumable:
+        return jsonify({'message': 'Invalid or unavailable consumable'}), 404
+
+    if consumable.name == 'Health Potion':
+        character.current_hp += 20
+        character.current_hp = min(character.current_hp, character.max_hp)
+
+    character.inventory.remove(consumable)
+    db.session.commit()
+    return jsonify({'message': f'{consumable.name} used successfully'}), 200
+
 # Combat logic for monster route
-@app.route('/character/<int:character_id>/monster_combat_action', methods=['POST'])
-def monster_combat_action(character_id):
+@app.route('/monster_combat_action', methods=['POST'])
+def monster_combat_action():
     if 'combat_state' not in session or session['combat_state']['turn'] != 'Monster':
         return jsonify({'message': 'It is not the monster\'s turn'}), 401
 
-    character = Character.query.get(character_id)
+    character = Character.query.get(session['combat_state']['character_id'])
     monster = Monster.query.get(session['combat_state']['monster_id'])
 
     monster_critical_chance = monster.luck / 100
@@ -429,7 +596,7 @@ def monster_combat_action(character_id):
 
     character.current_hp -= damage
     if character.current_hp <= 0:
-        game_over_message = handle_game_over(character_id)
+        game_over_message = handle_game_over(session['combat_state']['character_id'])
         session.pop('combat_state', None)
         return jsonify({'message': game_over_message}), 200
 
@@ -452,90 +619,13 @@ def revert_to_last_save(character_id):
     db.session.commit()
     return 'Game Over. You have been restored to full health.'
 
-# Consumable logic route
-@app.route('/character/<int:character_id>/use_consumable', methods=['POST'])
-def use_consumable(character_id):
-    if 'user_id' not in session or character_id != session.get('user_character'):
-        return jsonify({'message': 'Not authorized'}), 401
-
-    character = Character.query.get(character_id)
-    item_id = request.json.get('item_id')
-
-    consumable = next((item for item in character.inventory if item.id == item_id and item.type == 'Consumable'), None)
-    if not consumable:
-        return jsonify({'message': 'Invalid or unavailable consumable'}), 404
-
-    if consumable.name == 'Health Potion':
-        character.current_hp += 20
-        character.current_hp = min(character.current_hp, character.max_hp)
-    
-    if consumable.name == 'Bread':
-        character.current_hp += 5
-        character.current_hp = min(character.current_hp, character.max_hp)
-
-    character.inventory.remove(consumable)
-
-    db.session.commit()
-    return jsonify({'message': f'{consumable.name} used successfully'}), 200
-
-# Change equipment logic route
-@app.route('/character/<int:character_id>/change_equipment', methods=['POST'])
-def change_equipment(character_id):
-    if 'user_id' not in session or character_id != session.get('user_character'):
-        return jsonify({'message': 'Not authorized'}), 401
-
-    character = Character.query.get(character_id)
-    new_equipment_id = request.json.get('item_id')
-
-    def update_stats(character, item, apply_bonus=True):
-        modifiers = ['strength_bonus', 'vitality_bonus', 'armor_bonus', 'luck_bonus', 'dexterity_bonus', 'speed_bonus']
-        for mod in modifiers:
-            bonus = getattr(item, mod)
-            if apply_bonus:
-                setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) + bonus)
-            else:
-                setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) - bonus)
-
-    def swap_equipment(character, slot, new_item=None):
-        current_equipped = getattr(character, slot)
-
-        if current_equipped:
-            update_stats(character, current_equipped, apply_bonus=False)
-            character.inventory.append(current_equipped)
-
-        if new_item:
-            setattr(character, slot, new_item)
-            update_stats(character, new_item, apply_bonus=True)
-            character.inventory.remove(new_item)
-
-    new_equipment = next((item for item in character.inventory if item.id == new_equipment_id), None)
-    if not new_equipment:
-        return jsonify({'message': 'Invalid or unavailable equipment'}), 404
-
-    equipment_slots = {
-        'Melee Weapon': 'equipped_melee_weapon',
-        'Ranged Weapon': 'equipped_ranged_weapon',
-        'Armor': 'equipped_armor',
-        'Ring': 'equipped_ring',
-        'Necklace': 'equipped_necklace'
-    }
-
-    slot = equipment_slots.get(new_equipment.type)
-    if slot:
-        swap_equipment(character, slot, new_equipment)
-    else:
-        return jsonify({'message': 'Unrecognized equipment type'}), 400
-
-    db.session.commit()
-    return jsonify({'message': f'Equipped {new_equipment.name} successfully'}), 200
-
 # Combat end route
-@app.route('/character/<int:character_id>/end_combat', methods=['POST'])
-def end_combat(character_id):
-    if 'user_id' not in session or 'combat_state' not in session:
+@app.route('/end_combat', methods=['POST'])
+def end_combat():
+    if 'user_id' not in session or 'combat_state' not in session or 'character_id' not in session:
         return jsonify({'message': 'Combat state not found'}), 401
 
-    character = Character.query.get(character_id)
+    character = Character.query.get(session['character_id'])
     monster_id = session['combat_state'].get('monster_id')
     monster = Monster.query.get(monster_id)
 
@@ -549,7 +639,7 @@ def end_combat(character_id):
         monster_loot = distribute_loot(character, monster.level)
         outcome['loot'] = monster_loot
 
-        active_kill_quests = CharacterQuest.query.filter_by(character_id=character_id, status='In Progress').join(Quest).filter(Quest.kill_target == monster.id).all()
+        active_kill_quests = CharacterQuest.query.filter_by(character_id=session['character_id'], status='In Progress').join(Quest).filter(Quest.kill_target == monster.id).all()
         for quest in active_kill_quests:
             quest.progress += 1
             if quest.progress >= quest.quest.target_amount:
@@ -586,14 +676,10 @@ def distribute_loot(character, monster_level):
 # Floor logic route
 @app.route('/dungeon/choose_floor', methods=['POST'])
 def choose_floor():
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not identified'}), 401
 
-    user_id = session['user_id']
-    character = Character.query.filter_by(user_id=user_id).first()
-
-    if not character:
-        return jsonify({'message': 'Character not found'}), 404
+    character = Character.query.get(session['character_id'])
 
     data = request.json
     desired_floor = data.get('floor')
@@ -610,12 +696,12 @@ def choose_floor():
     return jsonify({'message': f'Moved to floor {desired_floor}. Encounter started!'}), 200
 
 # Rest and heal route
-@app.route('/character/<int:character_id>/rest', methods=['POST'])
-def rest_at_home(character_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+@app.route('/rest', methods=['POST'])
+def rest_at_home():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User not logged in or character not identified'}), 401
 
-    character = Character.query.get(character_id)
+    character = Character.query.get(session['character_id'])
 
     if character.location != 'Home':
         return jsonify({'message': 'You can only rest at home'}), 403
@@ -623,7 +709,46 @@ def rest_at_home(character_id):
     character.current_hp = character.max_hp
     db.session.commit()
 
-    return jsonify({'message': 'Character has rested and recovered to full health'}), 200
+    return jsonify({'message': 'You slept and now your life threatening injuries are gone!'}), 200
+
+# Swap equipment route
+@app.route('/character/change_equipment', methods=['POST'])
+def change_equipment():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not identified'}), 401
+
+    character = Character.query.get(session['character_id'])
+    if not character:
+        return jsonify({'message': 'Character not found'}), 404
+
+    new_equipment_id = request.json.get('item_id')
+    return handle_equipment_change(character, new_equipment_id)
+
+def handle_equipment_change(character, new_equipment_id):
+    new_equipment = next((item for item in character.inventory if item.id == new_equipment_id), None)
+    if not new_equipment:
+        return jsonify({'message': 'Invalid or unavailable equipment'}), 404
+
+    equipment_slots = {
+        'Melee Weapon': 'equipped_melee_weapon',
+        'Ranged Weapon': 'equipped_ranged_weapon',
+        'Armor': 'equipped_armor',
+        'Ring': 'equipped_ring',
+        'Necklace': 'equipped_necklace'
+    }
+
+    slot = equipment_slots.get(new_equipment.type)
+    if slot:
+        swap_equipment(character, slot, new_equipment)
+        db.session.commit()
+        return jsonify({'message': f'Equipped {new_equipment.name} successfully'}), 200
+    else:
+        return jsonify({'message': 'Unrecognized equipment type'}), 400
+
+# Testing route
+@app.route('/session_test')
+def session_test():
+    return jsonify({'session_data': dict(session)})
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
