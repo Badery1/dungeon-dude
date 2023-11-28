@@ -1,12 +1,12 @@
                             
-    ████████▄  ███    █▄  ███▄▄▄▄      ▄██████▄     ▄████████  ▄██████▄  ███▄▄▄▄        ████████▄  ███    █▄  ████████▄     ▄████████ 
-    ███   ▀███ ███    ███ ███▀▀▀██▄   ███    ███   ███    ███ ███    ███ ███▀▀▀██▄      ███   ▀███ ███    ███ ███   ▀███   ███    ███ 
-    ███    ███ ███    ███ ███   ███   ███    █▀    ███    █▀  ███    ███ ███   ███      ███    ███ ███    ███ ███    ███   ███    █▀  
-    ███    ███ ███    ███ ███   ███  ▄███         ▄███▄▄▄     ███    ███ ███   ███      ███    ███ ███    ███ ███    ███  ▄███▄▄▄     
-    ███    ███ ███    ███ ███   ███ ▀▀███ ████▄  ▀▀███▀▀▀     ███    ███ ███   ███      ███    ███ ███    ███ ███    ███ ▀▀███▀▀▀     
-    ███    ███ ███    ███ ███   ███   ███    ███   ███    █▄  ███    ███ ███   ███      ███    ███ ███    ███ ███    ███   ███    █▄  
-    ███   ▄███ ███    ███ ███   ███   ███    ███   ███    ███ ███    ███ ███   ███      ███   ▄███ ███    ███ ███   ▄███   ███    ███ 
-    ████████▀  ████████▀   ▀█   █▀    ████████▀    ██████████  ▀██████▀   ▀█   █▀       ████████▀  ████████▀  ████████▀    ██████████ 
+    ████████▄  ███    █▄  ███▄▄▄▄      ▄██████▄     ▄████████  ▄██████▄  ███▄▄▄▄        ████████▄  ███    █▄  ████████▄     ▄████████
+    ███   ▀███ ███    ███ ███▀▀▀██▄   ███    ███   ███    ███ ███    ███ ███▀▀▀██▄      ███   ▀███ ███    ███ ███   ▀███   ███    ███
+    ███    ███ ███    ███ ███   ███   ███    █▀    ███    █▀  ███    ███ ███   ███      ███    ███ ███    ███ ███    ███   ███    █▀ 
+    ███    ███ ███    ███ ███   ███  ▄███         ▄███▄▄▄     ███    ███ ███   ███      ███    ███ ███    ███ ███    ███  ▄███▄▄▄    
+    ███    ███ ███    ███ ███   ███ ▀▀███ ████▄  ▀▀███▀▀▀     ███    ███ ███   ███      ███    ███ ███    ███ ███    ███ ▀▀███▀▀▀    
+    ███    ███ ███    ███ ███   ███   ███    ███   ███    █▄  ███    ███ ███   ███      ███    ███ ███    ███ ███    ███   ███    █▄ 
+    ███   ▄███ ███    ███ ███   ███   ███    ███   ███    ███ ███    ███ ███   ███      ███   ▄███ ███    ███ ███   ▄███   ███    ███
+    ████████▀  ████████▀   ▀█   █▀    ████████▀    ██████████  ▀██████▀   ▀█   █▀       ████████▀  ████████▀  ████████▀    ██████████
                             
                                                                                                                                   
 # Legends tell of a Dude, a legendary Dude born once every thousand years who has the strength to fight some slimes and stuff.
@@ -51,8 +51,8 @@
 
 # Can you be the Dungeon Dude who defeats the legendary boss on the 100th floor???
 
-
-```-From a technical perspective on this project. This uses a Flask SQLalchemy backend, and a React front end.
+```
+-From a technical perspective on this project. This uses a Flask SQLalchemy backend, and a React front end.
 -There a about a dozen tables and multiple many to many relationships being handled in models.py
 -In the app.py I have created routes to handle different actions taken by the user such as creating or deleting an account... and lots else
 -Passwords are hashed through Bcrypt to create security for the users accounts.
@@ -79,3 +79,4 @@ Would Like
 `sound track`
 `sound effects for combat actions`
 `some kind of map overview of completed dungeon floors to choose where to go`
+```
