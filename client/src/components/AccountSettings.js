@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AccountSettings = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [currentUsername, setCurrentUsername] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCurrentUsername = async () => {
@@ -34,6 +36,19 @@ const AccountSettings = () => {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+        if (confirmDelete) {
+            try {
+                await axios.delete('/delete_account');
+                alert('Account deleted successfully.');
+                navigate('/');
+            } catch (error) {
+                console.error('Error deleting account:', error.response?.data);
+            }
+        }
+    };
+
     return (
         <div>
             <h2>Account Settings</h2>
@@ -52,6 +67,9 @@ const AccountSettings = () => {
                 />
                 <button type="submit">Update Account</button>
             </form>
+            <button onClick={handleDeleteAccount} style={{ backgroundColor: 'red', color: 'white' }}>
+                Delete Account
+            </button>
         </div>
     );
 };

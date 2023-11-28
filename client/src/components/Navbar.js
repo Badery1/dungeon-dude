@@ -1,11 +1,16 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ onLogout, isCharacterSelected, isInCombat }) => {
+const Navbar = ({ onLogout, isCharacterSelected, isInCombat, navigateToCharacterSelection }) => {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const isCurrentRoute = (route) => {
         return location.pathname === route;
+    };
+
+    const handleNavigate = (path) => {
+        navigate(path);
     };
 
     return (
@@ -13,19 +18,20 @@ const Navbar = ({ onLogout, isCharacterSelected, isInCombat }) => {
             <ul>
                 {isCharacterSelected && !isInCombat && (
                     <>
-                        {!isCurrentRoute('/home') && <li><Link to="/home">Home</Link></li>}
-                        {!isCurrentRoute('/town') && <li><Link to="/town">Town</Link></li>}
-                        {!isCurrentRoute('/dungeon') && <li><Link to="/dungeon">Dungeon</Link></li>}
+                        {!isCurrentRoute('/home') && <li><button onClick={() => handleNavigate('/home')}>Home</button></li>}
+                        {!isCurrentRoute('/town') && <li><button onClick={() => handleNavigate('/town')}>Town</button></li>}
+                        {!isCurrentRoute('/dungeon') && <li><button onClick={() => handleNavigate('/dungeon')}>Dungeon</button></li>}
                     </>
                 )}
                 {!isInCombat && !isCurrentRoute('/character-selection') && (
-                    <li><Link to="/character-selection">Character Selection</Link></li>
+                    <li><button onClick={navigateToCharacterSelection}>Character Selection</button></li>
                 )}
                 <li><button onClick={onLogout}>Logout</button></li>
-                {!isCurrentRoute('/account-settings') && <li><Link to="/account-settings">Account Settings</Link></li>}
+                {!isCurrentRoute('/account-settings') && <li><button onClick={() => handleNavigate('/account-settings')}>Account Settings</button></li>}
             </ul>
         </nav>
     );
 };
 
 export default Navbar;
+

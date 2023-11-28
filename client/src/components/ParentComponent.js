@@ -11,6 +11,9 @@ import Home from './Home';
 import Town from './Town';
 import GuildHall from './GuildHall';
 import Tavern from './Tavern';
+import PotionShop from './PotionShop';
+import Blacksmith from './Blacksmith';
+import PlayerInfo from './PlayerInfo';
 
 const ParentComponent = () => {
     const [isLoggedIn, setLoggedIn] = useState(false);
@@ -33,6 +36,11 @@ const ParentComponent = () => {
         } catch (error) {
             console.error('Logout error:', error);
         }
+    };
+
+    const navigateToCharacterSelection = () => {
+        setSelectedCharacterId(null);
+        navigate('/character-selection');
     };
 
     const selectCharacter = async (characterId) => {
@@ -63,9 +71,12 @@ const ParentComponent = () => {
                     onLogout={handleLogout}
                     isCharacterSelected={!!selectedCharacterId}
                     isInCombat={isInCombat}
+                    navigateToCharacterSelection={navigateToCharacterSelection}
                 />
             )}
-
+    
+            {isLoggedIn && selectedCharacterId && <PlayerInfo characterId={selectedCharacterId} />}
+    
             <Routes>
                 {isLoggedIn ? (
                     <>
@@ -83,6 +94,8 @@ const ParentComponent = () => {
                         <Route path="/town" element={<Town />} />
                         <Route path="/town/guildhall" element={<GuildHall characterId={selectedCharacterId} />} />
                         <Route path="/town/tavern" element={<Tavern characterId={selectedCharacterId} />} />
+                        <Route path="/town/potion-shop" element={<PotionShop characterId={selectedCharacterId} />} />
+                        <Route path="/town/blacksmith" element={<Blacksmith characterId={selectedCharacterId} />} />
                         {/* Other routes for logged in users */}
                     </>
                 ) : (

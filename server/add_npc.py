@@ -23,8 +23,22 @@ with app.app_context():
         dialogue="Welcome to the tavern! How can I assist you?"
     )
 
+    potion_shop = NPC(
+        name="Potion Seller",
+        role="Merchant",
+        dialogue="Need some potions? Come and take a look!"
+    )
+
+    blacksmith = NPC(
+        name="Blacksmith",
+        role="Merchant",
+        dialogue="Looking to arm yourself? You've come to the right place."
+    )
+
     db.session.add(guild_master)
     db.session.add(shady_mercenary)
     db.session.add(bartender)
+    db.session.add(potion_shop)
+    db.session.add(blacksmith)
 
     db.session.commit()

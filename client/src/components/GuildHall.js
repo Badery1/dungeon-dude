@@ -4,25 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 const GuildHall = () => {
     const [sellableItems, setSellableItems] = useState([]);
-    const [gold, setGold] = useState(0);
     const [showGuildMasterDialogue, setShowGuildMasterDialogue] = useState(false);
     const [showItems, setShowItems] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        fetchCharacterData();
-    }, []);
-
-    const fetchCharacterData = async () => {
-        try {
-            const response = await axios.get(`/character`);
-            if (response.data) {
-                setGold(response.data.gold);
-            }
-        } catch (error) {
-            console.error('Error fetching character data:', error);
-        }
-    };
 
     const handleGuildMasterClick = () => {
         setShowGuildMasterDialogue(!showGuildMasterDialogue);
@@ -46,7 +30,6 @@ const GuildHall = () => {
             const response = await axios.post(`/sell_item/${itemId}`);
             alert(response.data.message);
             handleViewItems();
-            fetchCharacterData();
         } catch (error) {
             console.error('Error selling item:', error);
         }
@@ -60,7 +43,6 @@ const GuildHall = () => {
         <div>
             <h1>Guild Hall</h1>
             <button onClick={handleBackToTown}>Back to Town</button>
-            <h2>Gold: {gold}</h2>
             <button onClick={handleGuildMasterClick}>Talk to Guild Master</button>
 
             {showGuildMasterDialogue && (

@@ -79,6 +79,24 @@ def update_account():
     db.session.commit()
     return jsonify({'message': 'Account updated successfully'}), 200
 
+# Delete account route
+@app.route('/delete_account', methods=['DELETE'])
+def delete_account():
+    if 'user_id' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+    session.clear()
+
+    return jsonify({'message': 'Account deleted successfully'}), 200
+
 # Get current username route
 @app.route('/current_user', methods=['GET'])
 def get_current_user():
@@ -165,6 +183,18 @@ def get_character():
     character_id = session['character_id']
     character = Character.query.get(character_id)
     if not character or character.user_id != session.get('user_id'):
+        return jsonify({'message': 'Character not found'}), 404
+
+    return jsonify(character.custom_serialize()), 200
+
+# Player data route
+@app.route('/player_data', methods=['GET'])
+def get_player_data():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not identified'}), 401
+
+    character = Character.query.get(session['character_id'])
+    if not character:
         return jsonify({'message': 'Character not found'}), 404
 
     return jsonify(character.custom_serialize()), 200
@@ -383,6 +413,9 @@ def interact_with_npc(npc_id):
     npc = NPC.query.get(npc_id)
     character = Character.query.get(session['character_id'])
 
+    POTION_SHOP_ID = 4
+    BLACKSMITH_ID = 5
+
     if npc is None or character is None:
         return jsonify({'message': 'NPC or character not found'}), 404
 
@@ -391,8 +424,16 @@ def interact_with_npc(npc_id):
         quests_data = [quest.to_dict() for quest in available_quests]
         return jsonify({'npc_name': npc.name, 'quests': quests_data}), 200
     
-    elif npc.role == 'Merchant':
-        items_data = [item.to_dict() for item in npc.stock]
+    if npc.role == 'Merchant':
+        if npc_id == POTION_SHOP_ID:
+            items_data = [item.to_dict() for item in npc.stock if item.type == 'Consumable']
+
+        elif npc_id == BLACKSMITH_ID:
+            items_data = [item.to_dict() for item in npc.stock if item.type in ['Melee Weapon', 'Ranged Weapon', 'Armor', 'Ring', 'Necklace']]
+
+        else:
+            items_data = [item.to_dict() for item in npc.stock]
+
         return jsonify({'npc_name': npc.name, 'items_for_sale': items_data}), 200
     
     elif npc.role == 'Guild Master':
@@ -710,6 +751,28 @@ def rest_at_home():
     db.session.commit()
 
     return jsonify({'message': 'You slept and now your life threatening injuries are gone!'}), 200
+
+# Inventory route
+@app.route('/character/<int:character_id>/inventory', methods=['GET'])
+def get_inventory(character_id):
+    if 'user_id' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    character = Character.query.get(character_id)
+    if not character or character.user_id != session['user_id']:
+        return jsonify({'message': 'Character not found or unauthorized'}), 404
+
+    inventory_items = [item.custom_serialize() for item in character.inventory]
+
+    equipped_items = {
+        'meleeWeapon': character.equipped_melee_weapon.custom_serialize() if character.equipped_melee_weapon else None,
+        'rangedWeapon': character.equipped_ranged_weapon.custom_serialize() if character.equipped_ranged_weapon else None,
+        'armor': character.equipped_armor.custom_serialize() if character.equipped_armor else None,
+        'ring': character.equipped_ring.custom_serialize() if character.equipped_ring else None,
+        'necklace': character.equipped_necklace.custom_serialize() if character.equipped_necklace else None
+    }
+
+    return jsonify({'inventory': inventory_items, 'equippedItems': equipped_items}), 200
 
 # Swap equipment route
 @app.route('/character/change_equipment', methods=['POST'])
