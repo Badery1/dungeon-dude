@@ -1,0 +1,502 @@
+[
+    {
+        "item_id": 35,
+        "drop_chance": 0.5,
+        "monster_level": 1
+    },
+    {
+        "item_id": 35,
+        "drop_chance": 0.5,
+        "monster_level": 2
+    },
+    {
+        "item_id": 35,
+        "drop_chance": 0.5,
+        "monster_level": 3
+    },
+    {
+        "item_id": 35,
+        "drop_chance": 0.5,
+        "monster_level": 4
+    },
+    {
+        "item_id": 35,
+        "drop_chance": 0.5,
+        "monster_level": 5
+    },
+    {
+        "item_id": 36,
+        "drop_chance": 0.5,
+        "monster_level": 6
+    },
+    {
+        "item_id": 36,
+        "drop_chance": 0.5,
+        "monster_level": 7
+    },
+    {
+        "item_id": 36,
+        "drop_chance": 0.5,
+        "monster_level": 8
+    },
+    {
+        "item_id": 36,
+        "drop_chance": 0.5,
+        "monster_level": 9
+    },
+    {
+        "item_id": 36,
+        "drop_chance": 0.5,
+        "monster_level": 10
+    },
+    {
+        "item_id": 37,
+        "drop_chance": 0.5,
+        "monster_level": 11
+    },
+    {
+        "item_id": 37,
+        "drop_chance": 0.5,
+        "monster_level": 12
+    },
+    {
+        "item_id": 37,
+        "drop_chance": 0.5,
+        "monster_level": 13
+    },
+    {
+        "item_id": 37,
+        "drop_chance": 0.5,
+        "monster_level": 14
+    },
+    {
+        "item_id": 37,
+        "drop_chance": 0.5,
+        "monster_level": 15
+    },
+    {
+        "item_id": 38,
+        "drop_chance": 0.5,
+        "monster_level": 16
+    },
+    {
+        "item_id": 38,
+        "drop_chance": 0.5,
+        "monster_level": 17
+    },
+    {
+        "item_id": 38,
+        "drop_chance": 0.5,
+        "monster_level": 18
+    },
+    {
+        "item_id": 38,
+        "drop_chance": 0.5,
+        "monster_level": 19
+    },
+    {
+        "item_id": 38,
+        "drop_chance": 0.5,
+        "monster_level": 20
+    },
+    {
+        "item_id": 39,
+        "drop_chance": 0.5,
+        "monster_level": 21
+    },
+    {
+        "item_id": 39,
+        "drop_chance": 0.5,
+        "monster_level": 22
+    },
+    {
+        "item_id": 39,
+        "drop_chance": 0.5,
+        "monster_level": 23
+    },
+    {
+        "item_id": 39,
+        "drop_chance": 0.5,
+        "monster_level": 24
+    },
+    {
+        "item_id": 39,
+        "drop_chance": 0.5,
+        "monster_level": 25
+    },
+    {
+        "item_id": 40,
+        "drop_chance": 0.5,
+        "monster_level": 26
+    },
+    {
+        "item_id": 40,
+        "drop_chance": 0.5,
+        "monster_level": 27
+    },
+    {
+        "item_id": 40,
+        "drop_chance": 0.5,
+        "monster_level": 28
+    },
+    {
+        "item_id": 40,
+        "drop_chance": 0.5,
+        "monster_level": 29
+    },
+    {
+        "item_id": 40,
+        "drop_chance": 0.5,
+        "monster_level": 30
+    },
+    {
+        "item_id": 41,
+        "drop_chance": 0.5,
+        "monster_level": 31
+    },
+    {
+        "item_id": 41,
+        "drop_chance": 0.5,
+        "monster_level": 32
+    },
+    {
+        "item_id": 41,
+        "drop_chance": 0.5,
+        "monster_level": 33
+    },
+    {
+        "item_id": 41,
+        "drop_chance": 0.5,
+        "monster_level": 34
+    },
+    {
+        "item_id": 41,
+        "drop_chance": 0.5,
+        "monster_level": 35
+    },
+    {
+        "item_id": 42,
+        "drop_chance": 0.5,
+        "monster_level": 36 
+    },
+    {
+        "item_id": 42,
+        "drop_chance": 0.5,
+        "monster_level": 37
+    },
+    {
+        "item_id": 42,
+        "drop_chance": 0.5,
+        "monster_level": 38
+    },
+    {
+        "item_id": 42,
+        "drop_chance": 0.5,
+        "monster_level": 39
+    },
+    {
+        "item_id": 42,
+        "drop_chance": 0.5,
+        "monster_level": 40
+    },
+    {
+        "item_id": 43,
+        "drop_chance": 0.5,
+        "monster_level": 41 
+    },
+    {
+        "item_id": 43,
+        "drop_chance": 0.5,
+        "monster_level": 42
+    },
+    {
+        "item_id": 43,
+        "drop_chance": 0.5,
+        "monster_level": 43
+    },
+    {
+        "item_id": 43,
+        "drop_chance": 0.5,
+        "monster_level": 44
+    },
+    {
+        "item_id": 43,
+        "drop_chance": 0.5,
+        "monster_level": 45
+    },
+    {
+        "item_id": 44,
+        "drop_chance": 0.5,
+        "monster_level": 46
+    },
+    {
+        "item_id": 44,
+        "drop_chance": 0.5,
+        "monster_level": 47
+    },
+    {
+        "item_id": 44,
+        "drop_chance": 0.5,
+        "monster_level": 48
+    },
+    {
+        "item_id": 44,
+        "drop_chance": 0.5,
+        "monster_level": 49
+    },
+    {
+        "item_id": 44,
+        "drop_chance": 0.5,
+        "monster_level": 50
+    },
+    {
+        "item_id": 45,
+        "drop_chance": 0.5,
+        "monster_level": 51
+    },
+    {
+        "item_id": 45,
+        "drop_chance": 0.5,
+        "monster_level": 52
+    },
+    {
+        "item_id": 45,
+        "drop_chance": 0.5,
+        "monster_level": 53
+    },
+    {
+        "item_id": 45,
+        "drop_chance": 0.5,
+        "monster_level": 54
+    },
+    {
+        "item_id": 45,
+        "drop_chance": 0.5,
+        "monster_level": 55
+    },
+    {
+        "item_id": 46,
+        "drop_chance": 0.5,
+        "monster_level": 56
+    },
+    {
+        "item_id": 46,
+        "drop_chance": 0.5,
+        "monster_level": 57
+    },
+    {
+        "item_id": 46,
+        "drop_chance": 0.5,
+        "monster_level": 58
+    },
+    {
+        "item_id": 46,
+        "drop_chance": 0.5,
+        "monster_level": 59
+    },
+    {
+        "item_id": 46,
+        "drop_chance": 0.5,
+        "monster_level": 60
+    },
+    {
+        "item_id": 47,
+        "drop_chance": 0.5,
+        "monster_level": 61
+    },
+    {
+        "item_id": 47,
+        "drop_chance": 0.5,
+        "monster_level": 62
+    },
+    {
+        "item_id": 47,
+        "drop_chance": 0.5,
+        "monster_level": 63
+    },
+    {
+        "item_id": 47,
+        "drop_chance": 0.5,
+        "monster_level": 64
+    },
+    {
+        "item_id": 47,
+        "drop_chance": 0.5,
+        "monster_level": 65
+    },
+    {
+        "item_id": 48,
+        "drop_chance": 0.5,
+        "monster_level": 66
+    },
+    {
+        "item_id": 48,
+        "drop_chance": 0.5,
+        "monster_level": 67
+    },
+    {
+        "item_id": 48,
+        "drop_chance": 0.5,
+        "monster_level": 68
+    },
+    {
+        "item_id": 48,
+        "drop_chance": 0.5,
+        "monster_level": 69
+    },
+    {
+        "item_id": 48,
+        "drop_chance": 0.5,
+        "monster_level": 70
+    },
+    {
+        "item_id": 49,
+        "drop_chance": 0.5,
+        "monster_level": 71
+    },
+    {
+        "item_id": 49,
+        "drop_chance": 0.5,
+        "monster_level": 72
+    },
+    {
+        "item_id": 49,
+        "drop_chance": 0.5,
+        "monster_level": 73
+    },
+    {
+        "item_id": 49,
+        "drop_chance": 0.5,
+        "monster_level": 74
+    },
+    {
+        "item_id": 49,
+        "drop_chance": 0.5,
+        "monster_level": 75
+    },
+    {
+        "item_id": 50,
+        "drop_chance": 0.5,
+        "monster_level": 76
+    },
+    {
+        "item_id": 50,
+        "drop_chance": 0.5,
+        "monster_level": 77
+    },
+    {
+        "item_id": 50,
+        "drop_chance": 0.5,
+        "monster_level": 78
+    },
+    {
+        "item_id": 50,
+        "drop_chance": 0.5,
+        "monster_level": 79
+    },
+    {
+        "item_id": 50,
+        "drop_chance": 0.5,
+        "monster_level": 80
+    },
+    {
+        "item_id": 51,
+        "drop_chance": 0.5,
+        "monster_level": 81
+    },
+    {
+        "item_id": 51,
+        "drop_chance": 0.5,
+        "monster_level": 82
+    },
+    {
+        "item_id": 51,
+        "drop_chance": 0.5,
+        "monster_level": 83
+    },
+    {
+        "item_id": 51,
+        "drop_chance": 0.5,
+        "monster_level": 84
+    },
+    {
+        "item_id": 51,
+        "drop_chance": 0.5,
+        "monster_level": 85
+    },
+    {
+        "item_id": 52,
+        "drop_chance": 0.5,
+        "monster_level": 86
+    },
+    {
+        "item_id": 52,
+        "drop_chance": 0.5,
+        "monster_level": 87
+    },
+    {
+        "item_id": 52,
+        "drop_chance": 0.5,
+        "monster_level": 88
+    },
+    {
+        "item_id": 52,
+        "drop_chance": 0.5,
+        "monster_level": 89
+    },
+    {
+        "item_id": 52,
+        "drop_chance": 0.5,
+        "monster_level": 90
+    },
+    {
+        "item_id": 53,
+        "drop_chance": 0.5,
+        "monster_level": 91
+    },
+    {
+        "item_id": 54,
+        "drop_chance": 0.5,
+        "monster_level": 92
+    },
+    {
+        "item_id": 55,
+        "drop_chance": 0.5,
+        "monster_level": 93
+    },
+    {
+        "item_id": 56,
+        "drop_chance": 0.5,
+        "monster_level": 94
+    },
+    {
+        "item_id": 57,
+        "drop_chance": 0.5,
+        "monster_level": 95
+    },
+    {
+        "item_id": 58,
+        "drop_chance": 0.5,
+        "monster_level": 96
+    },
+    {
+        "item_id": 59,
+        "drop_chance": 0.5,
+        "monster_level": 97
+    },
+    {
+        "item_id": 60,
+        "drop_chance": 0.5,
+        "monster_level": 98
+    },
+    {
+        "item_id": 61,
+        "drop_chance": 0.5,
+        "monster_level": 99
+    },
+    {
+        "item_id": 62,
+        "drop_chance": 0.5,
+        "monster_level": 100
+    }
+]

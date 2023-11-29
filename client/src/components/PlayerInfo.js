@@ -7,6 +7,8 @@ import eventEmitter from './EventEmitter';
 const PlayerInfo = ({ characterId }) => {
     const [playerData, setPlayerData] = useState({
         gold: 0,
+        exp: 0,
+        required_exp: 0,
         level: 0,
         current_hp: 0,
         max_hp: 0
@@ -46,6 +48,7 @@ const PlayerInfo = ({ characterId }) => {
         <div>
             <h3>Player Info</h3>
             <p>Gold: {playerData.gold}</p>
+            <p>XP: {playerData.exp} / {playerData.required_exp}</p>
             <p>Level: {playerData.level}</p>
             <p>HP: {playerData.current_hp} / {playerData.max_hp}</p>
             <button onClick={handleInventoryClick}>Inventory</button>

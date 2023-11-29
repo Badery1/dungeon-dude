@@ -15,11 +15,14 @@ class User(db.Model, SerializerMixin):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
-# Helper table to handle Many-to-Many Relationship
-character_items = db.Table('character_items',
-    db.Column('character_id', db.Integer, db.ForeignKey('character.id'), primary_key=True),
-    db.Column('item_id', db.Integer, db.ForeignKey('item.id'), primary_key=True)
-)
+# Character Item table
+class CharacterItem(db.Model):
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), primary_key=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), primary_key=True)
+    quantity = db.Column(db.Integer, default=1)
+
+    character = db.relationship('Character', back_populates='inventory')
+    item = db.relationship('Item', back_populates='character_items')
 
 # Helper table for npc stocks
 npc_items = db.Table('npc_items',
@@ -36,7 +39,7 @@ def calculate_required_exp(level):
     return round(100 * (1.2 ** (level - 1)))
 
 def calculate_stat(base, growth, level):
-    return round(base * (1 + growth) ** (level - 1))
+    return round(base + (base * growth * (level - 1)))
 
 def level_up(self):
         old_stats = self.get_stats()
@@ -94,16 +97,27 @@ class Character(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_saved = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
-    inventory = db.relationship('Item', secondary='character_items', back_populates='owners', cascade='all, delete-orphan', single_parent=True)
+    inventory = db.relationship('CharacterItem', back_populates='character')
     quests = db.relationship('CharacterQuest', back_populates='character')
     gold = db.Column(db.Integer, default=0)
 
     def custom_serialize(self):
+        required_exp = calculate_required_exp(self.level)
+        serialized_inventory = []
+        for character_item in self.inventory: 
+            item = character_item.item
+            serialized_inventory.append({
+                'id': item.id,
+                'name': item.name,
+                'type': item.type,
+                'quantity': character_item.quantity
+        })
         return {
             'id': self.id,
             'name': self.name,
             'level': self.level,
             'exp': self.exp,
+            'required_exp': required_exp,
             'strength': self.strength,
             'vitality': self.vitality,
             'armor': self.armor,
@@ -120,7 +134,7 @@ class Character(db.Model, SerializerMixin):
             'equipped_armor': self.equipped_armor.custom_serialize() if self.equipped_armor else None,
             'equipped_ring': self.equipped_ring.custom_serialize() if self.equipped_ring else None,
             'equipped_necklace': self.equipped_necklace.custom_serialize() if self.equipped_necklace else None,
-            'inventory': [item.custom_serialize() for item in self.inventory],
+            'inventory': serialized_inventory,
             'quests': [character_quest.custom_serialize() for character_quest in self.quests],
             'gold': self.gold,
             'created_at': self.created_at.isoformat() if self.created_at else None,
@@ -141,12 +155,12 @@ class Character(db.Model, SerializerMixin):
         self.update_stats_for_level()
 
     def update_stats_for_level(self):
-        self.strength = calculate_stat(5, 0.05, self.level)
-        self.vitality = calculate_stat(5, 0.05, self.level)
-        self.luck = calculate_stat(5, 0.03, self.level)
-        self.dexterity = calculate_stat(5, 0.05, self.level)
-        self.speed = calculate_stat(5, 0.03, self.level)
-        self.max_hp = calculate_stat(50, 0.10, self.level)
+        self.strength = calculate_stat(10, 0.05, self.level)
+        self.vitality = calculate_stat(10, 0.05, self.level)
+        self.luck = calculate_stat(10, 0.03, self.level)
+        self.dexterity = calculate_stat(10, 0.05, self.level)
+        self.speed = calculate_stat(10, 0.03, self.level)
+        self.max_hp = calculate_stat(100, 0.10, self.level)
 
 # Table for all items including weapons / armor / and consumables
 class Item(db.Model, SerializerMixin):
@@ -161,7 +175,7 @@ class Item(db.Model, SerializerMixin):
     dexterity_bonus = db.Column(db.Integer, default=0)
     speed_bonus = db.Column(db.Integer, default=0)
 
-    owners = db.relationship('Character', secondary='character_items', back_populates='inventory')
+    character_items = db.relationship('CharacterItem', back_populates='item')
     vendors = db.relationship('NPC', secondary='npc_items', back_populates='stock')
     price = db.Column(db.Integer)
 
@@ -198,7 +212,7 @@ class NPC(db.Model, SerializerMixin):
 
     stock = db.relationship('Item', secondary='npc_items', back_populates='vendors')
 
-    serialize_rules = ('-stock.owners', '-stock.vendors')
+    serialize_rules = ('-stock.vendors', )
 
 # Table to handle quests
 class Quest(db.Model, SerializerMixin):
@@ -209,14 +223,31 @@ class Quest(db.Model, SerializerMixin):
     item_reward_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     item_reward = db.relationship('Item')
     gold_reward = db.Column(db.Integer, default=0)
-    exp_reward = db.Column(db.Integer)
     required_dungeon_level = db.Column(db.Integer)
     target_amount = db.Column(db.Integer)
+    type = db.Column(db.String(50), nullable=False)
+    is_repeatable = db.Column(db.Boolean, default=False)
 
     npc_id = db.Column(db.Integer, db.ForeignKey('npc.id'))
     npc = db.relationship('NPC', backref='quests')
 
     characters = db.relationship('CharacterQuest', back_populates='quest')
+
+    def custom_serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'exp_reward': self.exp_reward,
+            'item_reward': self.item_reward.custom_serialize() if self.item_reward else None,
+            'gold_reward': self.gold_reward,
+            'required_dungeon_level': self.required_dungeon_level,
+            'target_amount': self.target_amount,
+            'type': self.type,
+            'is_repeatable': self.is_repeatable,
+            'npc_id': self.npc_id,
+            'npc_name': self.npc.name if self.npc else None
+        }
 
 # Table to track taken quests
 class CharacterQuest(db.Model):
@@ -224,6 +255,7 @@ class CharacterQuest(db.Model):
     quest_id = db.Column(db.Integer, db.ForeignKey('quest.id'), primary_key=True)
     status = db.Column(db.String(50))
     progress = db.Column(db.Integer, default=0)
+    completion_count = db.Column(db.Integer, default=0)
 
     character = db.relationship('Character', back_populates='quests')
     quest = db.relationship('Quest', back_populates='characters')
@@ -240,7 +272,10 @@ class CharacterQuest(db.Model):
             'gold_reward': self.quest.gold_reward if self.quest else None,
             'item_reward': self.quest.item_reward.custom_serialize() if self.quest and self.quest.item_reward else None,
             'required_dungeon_level': self.quest.required_dungeon_level if self.quest else None,
-            'target_amount': self.quest.target_amount if self.quest else None
+            'target_amount': self.quest.target_amount if self.quest else None,
+            'type': self.quest.type if self.quest else None,
+            'is_repeatable': self.quest.is_repeatable if self.quest else None,
+            'completion_count': self.completion_count
         }
 
 # Table to handle monsters

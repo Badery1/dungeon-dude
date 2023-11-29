@@ -20,6 +20,8 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
         }
     };
 
+    const isPlayersTurn = currentTurn === 'player';
+
     useEffect(() => {
         initiateCombat();
         enterCombat();
@@ -40,22 +42,29 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
                 action: actionType,
                 itemId
             });
-            setCombatLog([...combatLog, response.data.outcome]);
+    
+            setCombatLog(prevLog => {
+                const newLog = [response.data.outcome, ...prevLog];
+                return newLog.slice(0, 12);
+            });
     
             if (response.data.updatedMonsterHp !== undefined) {
-                setMonster(prevMonster => ({ ...prevMonster, current_hp: response.data.updatedMonsterHp }));
+                setMonster(prevMonster => ({
+                    ...prevMonster,
+                    current_hp: response.data.updatedMonsterHp
+                }));
             }
-
+    
             if (actionType === 'Flee' && response.data.outcome.includes('Successfully fled from combat')) {
                 exitCombat();
                 navigate('/dungeon');
-            } else if (!response.data.outcome.includes('Monster defeated')) {
+            } else if (response.data.outcome.includes('Monster defeated')) {
+                handleEndCombat();
+            } else {
                 setCurrentTurn('monster');
                 setTimeout(() => {
                     handleMonsterAction();
                 }, 1000);
-            } else {
-                handleEndCombat();
             }
         } catch (error) {
             console.error('Error during player action:', error);
@@ -72,12 +81,15 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
 
             const response = await axios.post('/monster_combat_action', payload);
 
-            setCombatLog([...combatLog, response.data.outcome]);
+            setCombatLog(prevLog => {
+                const newLog = [response.data.outcome, ...prevLog];
+                return newLog.slice(0, 12);
+            });
 
             if (response.data.characterDefeated) {
                 navigate('/game-over');
             } else {
-                setCurrentTurn(response.data.nextTurn);
+                setCurrentTurn('player');
                 eventEmitter.emit('playerDataChanged');
             }
         } catch (error) {
@@ -89,47 +101,49 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
         try {
             const response = await axios.post('/end_combat');
             const data = response.data;
-    
-            setCombatLog([...combatLog, data.message]);
-    
+
+            let newLogMessages = [];
+
             if (data.level_up) {
-                setCombatLog(log => [...log, `You leveled up to level ${data.level_up.new_level}`]);
+                newLogMessages.push(`You leveled up to level ${data.level_up.new_level}`);
             }
-    
             if (data.loot) {
-                data.loot.forEach(item => {
-                    setCombatLog(log => [...log, `You found ${item}`]);
-                });
+                newLogMessages.push(...data.loot.map(item => `You found ${item}`));
             }
-    
             if (data.quest_progress) {
-                setCombatLog(log => [...log, 'Quest progress updated']);
+                newLogMessages.push('Quest progress updated');
             }
-    
             if (data.new_dungeon_level) {
-                setCombatLog(log => [...log, `You can now access dungeon level ${data.new_dungeon_level}`]);
+                newLogMessages.push(`You can now access dungeon level ${data.new_dungeon_level}`);
             }
+
+            setCombatLog(prevLog => {
+                const updatedLog = [...newLogMessages, ...prevLog];
+                return updatedLog.slice(0, 12);
+            });
     
             setCombatEnded(true);
             eventEmitter.emit('playerDataChanged');
             exitCombat();
-    
         } catch (error) {
             console.error('Error during end combat:', error);
         }
     };
-    
 
     const handleNextFloor = async () => {
         try {
-            const response = await axios.post('/next_floor');
-            const newMonster = response.data.monster;
+            const response = await axios.post('/next_floor', { characterId });
+            if (response.status === 200) {
+                setCombatEnded(false);
+                setCombatLog([]);
 
-            setMonster(newMonster);
-            setCombatLog([]);
-
+                fetchCurrentMonster();
+                enterCombat();
+            } else {
+                console.error('Unexpected response status:', response.status);
+            }
         } catch (error) {
-            console.error('Error moving to next floor:', error);
+            console.error('Error resetting current floor:', error);
         }
     };
 
@@ -141,6 +155,7 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
                 setCombatLog([]);
 
                 fetchCurrentMonster();
+                enterCombat();
             } else {
                 console.error('Unexpected response status:', response.status);
             }
@@ -156,19 +171,14 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
 
     return (
         <div>
-            <h2>Combat!</h2>
-            {monster && <p>Monster: {monster.name} - HP: {monster.current_hp}</p>}
-            <div>
-                <button onClick={() => handlePlayerAction('Attack Melee')}>Melee Attack</button>
-                <button onClick={() => handlePlayerAction('Attack Ranged')}>Ranged Attack</button>
-                <button onClick={() => handlePlayerAction('Flee')}>Flee</button>
-            </div>
-            <div>
-                <h3>Combat Log</h3>
-                {combatLog.map((log, index) => <p key={index}>{log}</p>)}
-            </div>
+            {monster && (
+                <>
+                    <h2>Floor {monster.level} Combat</h2>
+                    <p>{monster.name} - HP: {monster.current_hp} / {monster.max_hp}</p>
+                </>
+            )}
     
-            {combatEnded && (
+            {combatEnded && monster && (
                 <div>
                     {monster.level < 100 && (
                         <button onClick={handleNextFloor}>Next Floor</button>
@@ -177,6 +187,19 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
                     <button onClick={handleReturnToDungeonEntrance}>Return to Dungeon Entrance</button>
                 </div>
             )}
+    
+            {!combatEnded && (
+                <div>
+                    <button onClick={() => handlePlayerAction('Attack Melee')} disabled={!isPlayersTurn}>Melee Attack</button>
+                    <button onClick={() => handlePlayerAction('Attack Ranged')} disabled={!isPlayersTurn}>Ranged Attack</button>
+                    <button onClick={() => handlePlayerAction('Flee')} disabled={!isPlayersTurn}>Flee</button>
+                </div>
+            )}
+    
+            <div>
+                <h3>Combat Log</h3>
+                {combatLog.map((log, index) => <p key={index}>{log}</p>)}
+            </div>
         </div>
     );
 };

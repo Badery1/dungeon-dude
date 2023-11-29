@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import random
 from sqlalchemy import func
-from config import DevelopmentConfig, MAX_DUNGEON_LEVEL
+from config import DevelopmentConfig
 from flask_migrate import Migrate
 from datetime import datetime, timedelta
 from extensions import db, bcrypt
@@ -20,7 +20,7 @@ bcrypt.init_app(app)
 migrate = Migrate(app, db)
 CORS(app, supports_credentials=True)
 
-from models import Character, User, Item, LootTable, NPC, Quest, CharacterQuest, Monster, calculate_damage_reduction
+from models import Character, User, Item, LootTable, NPC, Quest, CharacterQuest, Monster, CharacterItem, calculate_damage_reduction
 
 # Register new user route
 @app.route('/register', methods=['POST'])
@@ -537,11 +537,14 @@ def player_combat_action():
         is_critical = random.random() < critical_chance
         attack_multiplier = 2 if is_critical else 1
 
+        updated_hp = None 
+
         base_damage = (character.strength if action == 'Attack Melee' else character.dexterity) * attack_multiplier
         damage_reduction = 0
         damage = max(0, base_damage * (1 - damage_reduction))
 
         monster.current_hp -= damage
+        updated_hp = monster.current_hp
         crit_message = " Critical hit!" if is_critical else ""
         outcome = f'Monster hit with {damage} damage!{crit_message} Monster HP: {monster.current_hp}'
 
@@ -553,6 +556,8 @@ def player_combat_action():
     elif action == 'Flee':
         flee_chance = 0.50 + character.speed / 1000.0
         flee_chance = min(flee_chance, 1.0)
+
+        updated_hp = monster.current_hp
 
         if random.random() < flee_chance:
             outcome = 'Successfully fled from combat.'
@@ -567,7 +572,7 @@ def player_combat_action():
     session['combat_state']['turn'] = 'Monster'
 
     db.session.commit()
-    return jsonify({'message': 'Player action processed', 'outcome': outcome}), 200
+    return jsonify({'message': 'Player action processed', 'outcome': outcome, 'updatedMonsterHp': updated_hp}), 200
 
 
 def handle_equipment_change(character, new_equipment_id):
@@ -769,13 +774,21 @@ def distribute_loot(character, monster_level=None):
         modified_drop_chance = loot.drop_chance * (1 + character.luck * 0.01)
         if random.random() < modified_drop_chance:
             if loot.item:
-                character.inventory.append(loot.item)
+                add_or_update_inventory(character, loot.item.id)
                 acquired_loot.append(loot.item.name)
             if loot.gold_drop:
                 character.gold += loot.gold_drop
                 acquired_loot.append(f"{loot.gold_drop} gold")
 
     return acquired_loot
+
+def add_or_update_inventory(character, item_id, quantity=1):
+    existing_item = CharacterItem.query.filter_by(character_id=character.id, item_id=item_id).first()
+    if existing_item:
+        existing_item.quantity += quantity
+    else:
+        new_item = CharacterItem(character_id=character.id, item_id=item_id, quantity=quantity)
+        db.session.add(new_item)
 
 # Floor logic route
 @app.route('/dungeon/choose_floor', methods=['POST'])
@@ -820,33 +833,44 @@ def choose_floor():
 # Next dungeon level route
 @app.route('/next_floor', methods=['POST'])
 def handleNextFloor():
-    if 'user_id' not in session or 'character_id' not in session:
-        return jsonify({'message': 'Authentication required'}), 401
+    try:
+        if 'user_id' not in session or 'character_id' not in session:
+            return jsonify({'message': 'Authentication required'}), 401
 
-    character = db.session.get(Character, session['character_id'])
-    if not character:
-        return jsonify({'message': 'Character not found'}), 404
+        character_id = session['character_id']
+        character = db.session.get(Character, character_id)
+        if not character:
+            return jsonify({'message': 'Character not found'}), 404
 
-    next_level = min(character.dungeon_level + 1, MAX_DUNGEON_LEVEL)
-    character.dungeon_level = next_level
+        MAX_DUNGEON_LEVEL = 100
+        character.dungeon_level = min(character.dungeon_level + 1, MAX_DUNGEON_LEVEL)
 
-    monster = Monster.query.filter(Monster.level == next_level).first()
-    if not monster:
-        return jsonify({'message': f'No monster found for level {next_level}'}), 404
+        monster = Monster.query.filter_by(level=character.dungeon_level).first()
+        if not monster:
+            return jsonify({'message': f'No monster found for level {character.dungeon_level}'}), 404
 
-    turn_order = 'Monster' if character.speed < monster.speed else 'Character'
+        monster.current_hp = monster.max_hp
 
-    combat_state = {
-        'character_id': character.id,
-        'monster_id': monster.id,
-        'turn': turn_order
-    }
+        combat_state = {
+            'character_id': character.id,
+            'monster_id': monster.id,
+            'character_turn': True,
+            'turn': 'Character'
+        }
 
-    with db.session:
         db.session.commit()
         session['combat_state'] = combat_state
 
-    return jsonify({'message': 'Next floor combat initiated', 'combat_state': combat_state}), 200
+        return jsonify({
+            'message': 'Next floor combat initiated',
+            'combat_state': combat_state,
+            'character': character.custom_serialize(),
+            'monster': monster.custom_serialize()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'An error occurred while processing the request'}), 500
 
 # Reset current floor route
 @app.route('/reset_current_floor', methods=['POST'])
