@@ -61,7 +61,7 @@ const ParentComponent = () => {
     const exitCombat = async () => {
         try {
             await axios.post('/end_combat2');
-
+            setIsInCombat(false);
         } catch (error) {
             console.error('Error exiting combat:', error);
         }

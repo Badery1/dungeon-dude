@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal';
 import Inventory from './Inventory';
+import eventEmitter from './EventEmitter';
 
 const PlayerInfo = ({ characterId }) => {
     const [playerData, setPlayerData] = useState({
@@ -15,14 +16,22 @@ const PlayerInfo = ({ characterId }) => {
     useEffect(() => {
         const fetchPlayerData = async () => {
             try {
-                const response = await axios.get('/player_data');
+                const response = await axios.get('/player_data'); 
                 setPlayerData(response.data);
             } catch (error) {
                 console.error('Error fetching player data:', error);
             }
         };
 
+        const updatePlayerInfo = () => fetchPlayerData();
+
+        eventEmitter.subscribe('playerDataChanged', updatePlayerInfo);
+
         fetchPlayerData();
+
+        return () => {
+            eventEmitter.unsubscribe('playerDataChanged', updatePlayerInfo);
+        };
     }, []);
 
     const handleInventoryClick = () => {

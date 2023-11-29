@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import eventEmitter from './EventEmitter';
 
 const Combat = ({ characterId, enterCombat, exitCombat }) => {
     const [monster, setMonster] = useState(null);
@@ -45,7 +46,10 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
                 setMonster(prevMonster => ({ ...prevMonster, current_hp: response.data.updatedMonsterHp }));
             }
 
-            if (!response.data.outcome.includes('Monster defeated')) {
+            if (actionType === 'Flee' && response.data.outcome.includes('Successfully fled from combat')) {
+                exitCombat();
+                navigate('/dungeon');
+            } else if (!response.data.outcome.includes('Monster defeated')) {
                 setCurrentTurn('monster');
                 setTimeout(() => {
                     handleMonsterAction();
@@ -74,6 +78,7 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
                 navigate('/game-over');
             } else {
                 setCurrentTurn(response.data.nextTurn);
+                eventEmitter.emit('playerDataChanged');
             }
         } catch (error) {
             console.error('Error during monster action:', error);
@@ -106,6 +111,7 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
             }
     
             setCombatEnded(true);
+            eventEmitter.emit('playerDataChanged');
             exitCombat();
     
         } catch (error) {
@@ -129,14 +135,22 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
 
     const handleRepeatFloor = async () => {
         try {
-            await axios.post('/reset_current_floor', { characterId });
-            fetchCurrentMonster();
+            const response = await axios.post('/reset_current_floor', { characterId });
+            if (response.status === 200) {
+                setCombatEnded(false);
+                setCombatLog([]);
+
+                fetchCurrentMonster();
+            } else {
+                console.error('Unexpected response status:', response.status);
+            }
         } catch (error) {
             console.error('Error resetting current floor:', error);
         }
     };
 
     const handleReturnToDungeonEntrance = () => {
+        exitCombat();
         navigate('/dungeon');
     };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import eventEmitter from './EventEmitter';
 
 const Home = () => {
     const [feedbackMessage, setFeedbackMessage] = useState('');
@@ -25,6 +26,7 @@ const Home = () => {
         try {
             const response = await axios.post(`/rest`);
             displayFeedback(response.data.message);
+            eventEmitter.emit('playerDataChanged');
         } catch (error) {
             console.error('Error resting:', error);
             displayFeedback('Error resting. Please try again.');
