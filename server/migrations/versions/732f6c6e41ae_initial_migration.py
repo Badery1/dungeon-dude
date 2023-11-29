@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 340d47f30a07
+Revision ID: 732f6c6e41ae
 Revises: 
-Create Date: 2023-11-26 11:17:22.797607
+Create Date: 2023-11-28 18:46:26.916452
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '340d47f30a07'
+revision = '732f6c6e41ae'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -76,6 +76,7 @@ def upgrade():
     sa.Column('location', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('has_seen_intro', sa.Boolean(), nullable=True),
+    sa.Column('isInCombat', sa.Boolean(), nullable=True),
     sa.Column('equipped_melee_weapon_id', sa.Integer(), nullable=True),
     sa.Column('equipped_ranged_weapon_id', sa.Integer(), nullable=True),
     sa.Column('equipped_armor_id', sa.Integer(), nullable=True),

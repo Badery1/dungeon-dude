@@ -14,6 +14,8 @@ import Tavern from './Tavern';
 import PotionShop from './PotionShop';
 import Blacksmith from './Blacksmith';
 import PlayerInfo from './PlayerInfo';
+import Dungeon from './Dungeon';
+import Combat from './Combat';
 
 const ParentComponent = () => {
     const [isLoggedIn, setLoggedIn] = useState(false);
@@ -55,9 +57,14 @@ const ParentComponent = () => {
     const enterCombat = () => {
         setIsInCombat(true);
     };
+    
+    const exitCombat = async () => {
+        try {
+            await axios.post('/end_combat2');
 
-    const exitCombat = () => {
-        setIsInCombat(false);
+        } catch (error) {
+            console.error('Error exiting combat:', error);
+        }
     };
 
     const location = useLocation();
@@ -91,12 +98,13 @@ const ParentComponent = () => {
                             element={<Intro characterId={selectedCharacterId} />} 
                         />
                         <Route path="/home" element={<Home characterId={selectedCharacterId} />} />
-                        <Route path="/town" element={<Town />} />
+                        <Route path="/town" element={<Town characterId={selectedCharacterId} />} />
                         <Route path="/town/guildhall" element={<GuildHall characterId={selectedCharacterId} />} />
                         <Route path="/town/tavern" element={<Tavern characterId={selectedCharacterId} />} />
                         <Route path="/town/potion-shop" element={<PotionShop characterId={selectedCharacterId} />} />
                         <Route path="/town/blacksmith" element={<Blacksmith characterId={selectedCharacterId} />} />
-                        {/* Other routes for logged in users */}
+                        <Route path="/dungeon" element={<Dungeon characterId={selectedCharacterId} enterCombat={enterCombat} exitCombat={exitCombat}/>} />
+                        <Route path="/combat" element={<Combat characterId={selectedCharacterId} enterCombat={enterCombat} exitCombat={exitCombat}/>} />
                     </>
                 ) : (
                     <Route path="/" element={<LoginRegister onLogin={handleLogin} />} />

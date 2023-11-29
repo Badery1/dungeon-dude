@@ -5,13 +5,15 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import random
 from sqlalchemy import func
-from config import DevelopmentConfig
+from config import DevelopmentConfig, MAX_DUNGEON_LEVEL
 from flask_migrate import Migrate
-from datetime import datetime
+from datetime import datetime, timedelta
 from extensions import db, bcrypt
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
+
+app.permanent_session_lifetime = timedelta(days=7)
 
 db.init_app(app)
 bcrypt.init_app(app)
@@ -210,8 +212,9 @@ def select_character(character_id):
         return jsonify({'message': 'Character not found or unauthorized'}), 404
 
     session['character_id'] = character_id
+    session['combat_state'] = None
+    
     return jsonify({'message': 'Character selected successfully'}), 200
-
 
 # Intro route
 @app.route('/character_seen_intro', methods=['POST'])
@@ -469,35 +472,56 @@ def buy_item(npc_id, item_id):
 # Combat start route
 @app.route('/initiate_combat', methods=['POST'])
 def initiate_combat():
-    if 'user_id' not in session or 'character_id' not in session:
-        return jsonify({'message': 'User or character not logged in'}), 401
+    print("Session data:", session) 
+    if 'character_id' not in session:
+        return jsonify({'message': 'Character not found or unauthorized'}), 401
 
-    character = Character.query.get(session['character_id'])
-    if character is None:
+    character_id = session['character_id']
+    character = Character.query.get(character_id)
+    if not character:
         return jsonify({'message': 'Character not found'}), 404
 
-    monster = Monster.query.filter(Monster.level == character.dungeon_level).order_by(func.random()).first()
-    if monster is None:
-        return jsonify({'message': 'No monsters found for this dungeon level'}), 404
-
-    turn_order = 'Character' if character.speed >= monster.speed else 'Monster'
+    monster = Monster.query.filter_by(level=character.dungeon_level).first()
+    if not monster:
+        return jsonify({'message': 'No monster found for this level'}), 404
 
     combat_state = {
         'character_id': character.id,
         'monster_id': monster.id,
-        'turn': turn_order
+        'character_turn': True,
+        'turn': 'Character'
     }
 
-    return jsonify({'message': 'Combat initiated', 'combat_state': combat_state}), 200
+    monster.current_hp = monster.max_hp
+    db.session.commit()
+
+    session['combat_state'] = combat_state
+
+    return jsonify({
+        'combat_state': combat_state,
+        'character': character.custom_serialize(),
+        'monster': monster.custom_serialize()
+    }), 200
 
 # Combat logic route for player route
 @app.route('/player_combat_action', methods=['POST'])
 def player_combat_action():
-    if 'user_id' not in session or 'combat_state' not in session or session['combat_state']['turn'] != 'Character':
-        return jsonify({'message': 'Not your turn or not logged in'}), 401
+    if 'user_id' not in session:
+        return jsonify({'message': 'Not logged in'}), 401
 
-    character = Character.query.get(session['combat_state']['character_id'])
-    monster = Monster.query.get(session['combat_state']['monster_id'])
+    if 'combat_state' not in session:
+        return jsonify({'message': 'Combat state not found in session'}), 401
+
+    combat_state = session['combat_state']
+
+    if 'character_turn' not in combat_state:
+        return jsonify({'message': 'Character turn not found in combat state'}), 401
+
+    if not combat_state['character_turn']:
+        return jsonify({'message': 'It is not the character\'s turn'}), 401
+
+    character = Character.query.get(combat_state['character_id'])
+    monster = Monster.query.get(combat_state['monster_id'])
 
     if not character or not monster:
         return jsonify({'message': 'Character or Monster not found'}), 404
@@ -513,7 +537,7 @@ def player_combat_action():
         attack_multiplier = 2 if is_critical else 1
 
         base_damage = (character.strength if action == 'Attack Melee' else character.dexterity) * attack_multiplier
-        damage_reduction = calculate_damage_reduction(monster.armor)
+        damage_reduction = 0
         damage = max(0, base_damage * (1 - damage_reduction))
 
         monster.current_hp -= damage
@@ -522,17 +546,8 @@ def player_combat_action():
 
         if monster.current_hp <= 0:
             outcome = 'Monster defeated!'
-            session.pop('combat_state', None)
         else:
-            session['combat_state']['turn'] = 'Monster'
-
-    elif action == 'Use Consumable':
-        item_id = request.json.get('item_id')
-        outcome = handle_consumable_use(character, item_id)
-
-    elif action == 'Change Equipment':
-        new_equipment_id = request.json.get('item_id')
-        return handle_equipment_change(character, new_equipment_id)
+            session['combat_state']['character_turn'] = False
 
     elif action == 'Flee':
         flee_chance = 0.50 + character.speed / 1000.0
@@ -543,10 +558,17 @@ def player_combat_action():
             session.pop('combat_state', None)
         else:
             outcome = 'Failed to flee. Monster\'s turn.'
-            session['combat_state']['turn'] = 'Monster'
+            session['combat_state']['character_turn'] = False
+
+    else:
+        return jsonify({'message': 'Invalid action'}), 400
+    
+    session['combat_state']['character_turn'] = False
+    session['combat_state']['turn'] = 'Monster'
 
     db.session.commit()
     return jsonify({'message': 'Player action processed', 'outcome': outcome}), 200
+
 
 def handle_equipment_change(character, new_equipment_id):
     if new_equipment_id is None:
@@ -621,44 +643,75 @@ def handle_consumable_use(character, item_id):
 # Combat logic for monster route
 @app.route('/monster_combat_action', methods=['POST'])
 def monster_combat_action():
-    if 'combat_state' not in session or session['combat_state']['turn'] != 'Monster':
-        return jsonify({'message': 'It is not the monster\'s turn'}), 401
+    if 'character_id' not in session:
+        return jsonify({'message': 'No character selected or unauthorized'}), 401
 
-    character = Character.query.get(session['combat_state']['character_id'])
-    monster = Monster.query.get(session['combat_state']['monster_id'])
+    data = request.json
 
-    monster_critical_chance = monster.luck / 100
-    is_critical = random.random() < monster_critical_chance
-    attack_multiplier = 2 if is_critical else 1
+    request_character_id = data.get('character_id')
+    session_character_id = session.get('character_id')
 
-    base_damage = monster.strength * attack_multiplier
-    damage_reduction = calculate_damage_reduction(character.armor)
-    damage = max(0, base_damage * (1 - damage_reduction))
+    if not request_character_id:
+        return jsonify({'message': 'Character ID not provided'}), 400
 
+    if request_character_id != session_character_id:
+        return jsonify({'message': 'Character ID does not match the session'}), 403
+
+    monster_id = data.get('monster_id')
+    character = Character.query.get(request_character_id)
+    monster = Monster.query.get(monster_id)
+
+    if not character or not monster:
+        return jsonify({'message': 'Character or Monster not found'}), 404
+
+    damage = monster.strength
     character.current_hp -= damage
+
     if character.current_hp <= 0:
-        game_over_message = handle_game_over(session['combat_state']['character_id'])
-        session.pop('combat_state', None)
-        return jsonify({'message': game_over_message}), 200
-
+        outcome = handle_character_defeat(request_character_id)
+        db.session.commit()
+        return jsonify({'message': outcome, 'characterDefeated': True}), 200
     else:
-        crit_message = " Critical hit!" if is_critical else ""
-        outcome = f'Character hit with {damage} damage!{crit_message} Character HP: {character.current_hp}'
+        outcome = f'Character hit with {damage} damage! Character HP: {character.current_hp}'
+        next_turn = 'Character'
 
-        session['combat_state']['turn'] = 'Character'
+        db.session.commit()
+        return jsonify({'message': 'Monster action processed', 'outcome': outcome, 'nextTurn': next_turn}), 200
 
-    db.session.commit()
-    return jsonify({'message': 'Monster action processed', 'outcome': outcome}), 200
-
-def handle_game_over(character_id):
-    return revert_to_last_save(character_id)
+def handle_character_defeat(character_id):
+    outcome = revert_to_last_save(character_id)
+    return f'Game Over. {outcome}'
 
 def revert_to_last_save(character_id):
     character = Character.query.get(character_id)
     character.current_hp = character.max_hp
 
     db.session.commit()
-    return 'Game Over. You have been restored to full health.'
+    return 'You have been restored to full health.'
+
+# Combat state route
+@app.route('/set_combat_state', methods=['POST'])
+def set_combat_state():
+    if 'character_id' not in session:
+        return jsonify({'message': 'Character not found or unauthorized'}), 401
+
+    data = request.json
+
+    try:
+        character = Character.query.get(session['character_id'])
+        if not character:
+            return jsonify({'message': 'Character not found'}), 404
+
+        character.is_in_combat = data.get('isInCombat', False)
+        db.session.commit()
+
+        session['isInCombat'] = character.is_in_combat
+
+        return jsonify({'message': 'Combat state updated', 'isInCombat': character.is_in_combat}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'An error occurred while processing the request'}), 500
 
 # Combat end route
 @app.route('/end_combat', methods=['POST'])
@@ -670,8 +723,17 @@ def end_combat():
     monster_id = session['combat_state'].get('monster_id')
     monster = Monster.query.get(monster_id)
 
-    outcome = {}
-    if monster and monster.current_hp <= 0:
+    if not character or not monster:
+        return jsonify({'message': 'Character or monster not found'}), 404
+
+    outcome = {
+        'message': 'Combat ended',
+        'level_up': None,
+        'loot': None,
+        'new_dungeon_level': None
+    }
+
+    if monster.current_hp <= 0:
         level_up_info = character.add_exp(monster.exp_drop)
         if level_up_info:
             outcome['level_up'] = level_up_info
@@ -680,38 +742,39 @@ def end_combat():
         monster_loot = distribute_loot(character, monster.level)
         outcome['loot'] = monster_loot
 
-        active_kill_quests = CharacterQuest.query.filter_by(character_id=session['character_id'], status='In Progress').join(Quest).filter(Quest.kill_target == monster.id).all()
+        active_kill_quests = CharacterQuest.query.filter_by(character_id=session['character_id'], status='In Progress').all()
         for quest in active_kill_quests:
-            quest.progress += 1
-            if quest.progress >= quest.quest.target_amount:
-                quest.status = 'Completed'
+            if "kill" in quest.quest.description.lower() and quest.progress < quest.quest.target_amount:
+                quest.progress += 1
+                if quest.progress >= quest.quest.target_amount:
+                    quest.status = 'Completed'
 
         if character.dungeon_level == character.highest_dungeon_level:
             character.highest_dungeon_level += 1
             outcome['new_dungeon_level'] = character.highest_dungeon_level
 
-    session.pop('combat_state', None)
     db.session.commit()
-    return jsonify(outcome), 200
     
-def distribute_loot(character, monster_level):
+    return jsonify(outcome), 200
+
+    
+def distribute_loot(character, monster_level=None):
+    if monster_level is None:
+        return []
+
     loot_items = LootTable.query.filter_by(monster_level=monster_level).all()
     acquired_loot = []
 
     for loot in loot_items:
-        base_drop_chance = loot.drop_chance
-        modified_drop_chance = base_drop_chance * (1 + character.luck * 0.01)
-        modified_drop_chance = min(modified_drop_chance, 1.0)
-
+        modified_drop_chance = loot.drop_chance * (1 + character.luck * 0.01)
         if random.random() < modified_drop_chance:
             if loot.item:
                 character.inventory.append(loot.item)
                 acquired_loot.append(loot.item.name)
-            elif loot.gold_drop:
+            if loot.gold_drop:
                 character.gold += loot.gold_drop
                 acquired_loot.append(f"{loot.gold_drop} gold")
 
-    db.session.commit()
     return acquired_loot
 
 # Floor logic route
@@ -721,20 +784,110 @@ def choose_floor():
         return jsonify({'message': 'User or character not identified'}), 401
 
     character = Character.query.get(session['character_id'])
-
     data = request.json
     desired_floor = data.get('floor')
+
+    if desired_floor < 1:
+        return jsonify({'message': 'Invalid floor number'}), 400
+
+    if character.highest_dungeon_level == 0:
+        character.highest_dungeon_level = 1
 
     if desired_floor > character.highest_dungeon_level:
         return jsonify({'message': 'Floor not accessible'}), 403
 
     character.dungeon_level = desired_floor
-
     monster = Monster.query.get(desired_floor)
-    session['combat_state'] = {'turn': 'Character', 'monster_id': monster.id}
 
-    db.session.commit()
-    return jsonify({'message': f'Moved to floor {desired_floor}. Encounter started!'}), 200
+    if not monster:
+        return jsonify({'message': 'Monster not found for this floor'}), 404
+
+    try:
+        session['combat_state'] = {
+            'character_id': character.id,
+            'turn': 'Character',
+            'monster_id': monster.id
+        }
+
+        db.session.commit()
+
+        return jsonify({'message': f'Moved to floor {desired_floor}. Encounter started with {monster.name}!', 'monster': monster.custom_serialize()}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'An error occurred while processing the request'}), 500
+
+# Next dungeon level route
+@app.route('/next_floor', methods=['POST'])
+def handleNextFloor():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'Authentication required'}), 401
+
+    character = Character.query.get(session['character_id'])
+    if not character:
+        return jsonify({'message': 'Character not found'}), 404
+
+    next_level = min(character.dungeon_level + 1, MAX_DUNGEON_LEVEL)
+    character.dungeon_level = next_level
+
+    monster = Monster.query.filter(Monster.level == next_level).first()
+    if not monster:
+        return jsonify({'message': f'No monster found for level {next_level}'}), 404
+
+    turn_order = 'Monster' if character.speed < monster.speed else 'Character'
+
+    combat_state = {
+        'character_id': character.id,
+        'monster_id': monster.id,
+        'turn': turn_order
+    }
+
+    with db.session:
+        db.session.commit()
+        session['combat_state'] = combat_state
+
+    return jsonify({'message': 'Next floor combat initiated', 'combat_state': combat_state}), 200
+
+# Reset current floor route
+@app.route('/reset_current_floor', methods=['POST'])
+def reset_current_floor():
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not identified'}), 401
+
+    character = Character.query.get(session['character_id'])
+    if character is None:
+        return jsonify({'message': 'Character not found'}), 404
+
+    monster = Monster.query.filter(Monster.level == character.dungeon_level).order_by(func.random()).first()
+    if monster is None:
+        return jsonify({'message': 'No monsters found for this dungeon level'}), 404
+
+    turn_order = 'Monster' if character.speed < monster.speed else 'Character'
+    combat_state = {
+        'character_id': character.id,
+        'monster_id': monster.id,
+        'turn': turn_order
+    }
+
+    with db.session:
+        db.session.commit()
+        session['combat_state'] = combat_state
+
+    return jsonify({'message': 'Combat reset for current floor', 'combat_state': combat_state}), 200
+
+# Current monster route
+@app.route('/current_monster', methods=['GET'])
+def current_monster():
+    if 'combat_state' not in session:
+        return jsonify({'message': 'No combat in progress'}), 404
+
+    monster_id = session['combat_state']['monster_id']
+    monster = Monster.query.get(monster_id)
+
+    if monster is None:
+        return jsonify({'message': 'Monster not found'}), 404
+
+    return jsonify(monster.custom_serialize()), 200
 
 # Rest and heal route
 @app.route('/rest', methods=['POST'])
@@ -807,6 +960,13 @@ def handle_equipment_change(character, new_equipment_id):
         return jsonify({'message': f'Equipped {new_equipment.name} successfully'}), 200
     else:
         return jsonify({'message': 'Unrecognized equipment type'}), 400
+    
+# Combat ending route
+@app.route('/end_combat2', methods=['POST'])
+def end_combat2():
+    session.pop('combat_state', None)
+
+    return jsonify({'message': 'Combat ended successfully'}), 200
 
 # Testing route
 @app.route('/session_test')

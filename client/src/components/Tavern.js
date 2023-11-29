@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,14 @@ const Tavern = () => {
         "So I've heard your the legendary Dungeon Dude or something? Well good for you.",
         "Can I help you? Probably not, I'm literally just here to respond to you.",
         "You know, I used to be an adventurer like you... don't worry I won't say it.",
-        "I've heard on the last floor of the dungeon something sinister stirs..."
+        "I've heard on the last floor of the dungeon something sinister stirs...",
+        "Shouldn't you be killing stuff or something?",
+        "You know, I though the Legendary Dungeon Dude would be... taller.",
+        "Did you know that leveling from 99 to 100 takes well over 3,450,748,938 xp? That sounds like bad game design.",
+        "You'd think I could sell you beer or something, but nope. Just chat from me!",
+        "My dialogue is about as creative as some monster names... like... Hospital bill? Really?",
+        "That will be 2gp...",
+        "( ͡~ ͜ʖ ͡°)"
     ];
 
     const questGiverDialogue = "Hey there Dungeon Dude, I've got some quests I think you might be interested in...";

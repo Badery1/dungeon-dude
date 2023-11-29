@@ -78,6 +78,7 @@ class Character(db.Model, SerializerMixin):
     location = db.Column(db.String, nullable=False, default='Home')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     has_seen_intro = db.Column(db.Boolean, default=False)
+    isInCombat = db.Column(db.Boolean, default=False)
     
     equipped_melee_weapon_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     equipped_melee_weapon = db.relationship('Item', foreign_keys=[equipped_melee_weapon_id])
@@ -124,7 +125,8 @@ class Character(db.Model, SerializerMixin):
             'gold': self.gold,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'last_saved': self.last_saved.isoformat() if self.last_saved else None,
-            'has_seen_intro': self.has_seen_intro
+            'has_seen_intro': self.has_seen_intro,
+            'isInCombat': self.isInCombat
         }
 
     def add_exp(self, amount):
@@ -252,3 +254,16 @@ class Monster(db.Model, SerializerMixin):
     max_hp = db.Column(db.Integer)
     current_hp = db.Column(db.Integer)
     exp_drop = db.Column(db.Integer)
+
+    def custom_serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'level': self.level,
+            'strength': self.strength,
+            'vitality': self.vitality,
+            'speed': self.speed,
+            'max_hp': self.max_hp,
+            'current_hp': self.current_hp,
+            'exp_drop': self.exp_drop
+        }

@@ -5,8 +5,11 @@ class Config:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///mydatabase.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+
 class DevelopmentConfig(Config):
-    DEBUG = True
+    DEBUG = False
 
 class ProductionConfig(Config):
     DEBUG = False
+
+MAX_DUNGEON_LEVEL = 100

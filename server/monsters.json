@@ -19,7 +19,7 @@
     },
     {
         "level": 3,
-        "name": "Swull Slime",
+        "name": "Swole Slime",
         "strength": 6,
         "vitality": 6,
         "speed": 5,
@@ -154,7 +154,7 @@
     },
     {
         "level": 18,
-        "name": "Swull Goblin",
+        "name": "Swole Goblin",
         "strength": 11,
         "vitality": 11,
         "speed": 8,
@@ -604,7 +604,7 @@
     },
     {
         "level": 68,
-        "name": "Two Shadows",
+        "name": "Shadow in a Shadow",
         "strength": 131,
         "vitality": 131,
         "speed": 36,
