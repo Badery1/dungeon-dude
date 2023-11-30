@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import eventEmitter from './EventEmitter';
 
 const Inventory = ({ characterId, closeModal }) => {
     const [playerData, setPlayerData] = useState({
@@ -33,11 +34,8 @@ const Inventory = ({ characterId, closeModal }) => {
         try {
             const response = await axios.get(`/player_data`);
             const responseData = response.data;
-    
-            // Extracting stats and inventory from the response
             const { inventory, ...stats } = responseData;
-    
-            // Updating playerData state to match the response structure
+
             setPlayerData({
                 inventory: inventory || [],
                 equippedItems: {
@@ -63,8 +61,8 @@ const Inventory = ({ characterId, closeModal }) => {
 
     const handleChangeEquipment = async (itemId) => {
         try {
-            await axios.post(`/character/${characterId}/change_equipment`, { itemId });
-            fetchPlayerData();
+            await axios.post(`/character/${characterId}/change_equipment`, { item_id: itemId });
+            await fetchPlayerData();
         } catch (error) {
             console.error('Error changing equipment:', error);
         }
@@ -78,11 +76,39 @@ const Inventory = ({ characterId, closeModal }) => {
         return itemType !== 'Consumable' && itemType !== 'Monster Drop';
     };
 
-    const filteredInventory = playerData.inventory.filter(item => {
-        if (filter === 'All') return true;
-        if (filter === 'Equipment') return isEquippable(item.type);
-        return item.type === filter;
-    });
+    const handleUseConsumable = async (itemId) => {
+        try {
+            await axios.post(`/character/${characterId}/use_consumable`, { itemId });
+            alert('Consumable used successfully');
+            fetchPlayerData();
+            eventEmitter.emit('playerDataChanged');
+        } catch (error) {
+            console.error('Error using consumable:', error);
+        }
+    };
+
+    const isConsumable = (itemType) => {
+        return itemType === 'Consumable';
+    };
+
+    const isEquipped = (item) => {
+        const equippedItems = playerData.equippedItems || {};
+        return [
+            equippedItems.meleeWeapon,
+            equippedItems.rangedWeapon,
+            equippedItems.armor,
+            equippedItems.ring,
+            equippedItems.necklace
+        ].some(equippedItem => equippedItem && equippedItem.id === item.id);
+    };
+
+    const filteredInventory = playerData.inventory
+        .filter(item => !isEquipped(item))
+        .filter(item => {
+            if (filter === 'All') return true;
+            if (filter === 'Equipment') return isEquippable(item.type);
+            return item.type === filter;
+        });
 
     return (
         <div>
@@ -99,6 +125,9 @@ const Inventory = ({ characterId, closeModal }) => {
                         {inventoryItem.name} - Quantity: {inventoryItem.quantity}
                         {isEquippable(inventoryItem.type) && (
                             <button onClick={() => handleChangeEquipment(inventoryItem.id)}>Equip</button>
+                        )}
+                        {isConsumable(inventoryItem.type) && (
+                            <button onClick={() => handleUseConsumable(inventoryItem.id)}>Use</button>
                         )}
                     </li>
                 ))}

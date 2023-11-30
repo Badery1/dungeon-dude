@@ -4,6 +4,7 @@ load_dotenv()
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import random
+from sqlalchemy.orm import joinedload
 from sqlalchemy import func
 from config import DevelopmentConfig
 from flask_migrate import Migrate
@@ -395,17 +396,49 @@ def sell_item(item_id):
         return jsonify({'message': 'User or character not logged in'}), 401
 
     character = db.session.get(Character, session['character_id'])
-    item = db.session.get(Item, item_id)
+    character_item = CharacterItem.query.filter_by(character_id=character.id, item_id=item_id).first()
 
-    if character is None or item is None:
+    if character is None or character_item is None:
         return jsonify({'message': 'Character or item not found'}), 404
 
-    character.gold += item.price
+    character.gold += character_item.item.price
 
-    character.inventory.remove(item)
+    if character_item.quantity > 1:
+        character_item.quantity -= 1
+    else:
+        db.session.delete(character_item)
+
     db.session.commit()
 
-    return jsonify({'message': f'Item {item.name} sold for {item.price} gold'}), 200
+    return jsonify({'message': f'Item {character_item.item.name} sold for {character_item.item.price} gold'}), 200
+
+# Sell Monster drops route
+@app.route('/sell_monster_component/<int:item_id>', methods=['POST'])
+def sell_monster_component(item_id):
+    if 'user_id' not in session or 'character_id' not in session:
+        return jsonify({'message': 'User or character not logged in'}), 401
+
+    character = db.session.get(Character, session['character_id'])
+    if character is None:
+        return jsonify({'message': 'Character not found'}), 404
+
+    character_item = CharacterItem.query.filter_by(character_id=character.id, item_id=item_id).first()
+    if character_item is None or character_item.item.type != 'Monster Drop':
+        return jsonify({'message': 'Invalid item or not a monster drop'}), 400
+
+    quantity_to_sell = request.json.get('quantity', 1)
+    if quantity_to_sell > character_item.quantity:
+        return jsonify({'message': 'Not enough items to sell'}), 400
+
+    total_sell_price = quantity_to_sell * character_item.item.price
+    character.gold += total_sell_price
+    character_item.quantity -= quantity_to_sell
+
+    if character_item.quantity <= 0:
+        db.session.delete(character_item)
+
+    db.session.commit()
+    return jsonify({'message': f'Sold {quantity_to_sell} x {character_item.item.name} for {total_sell_price} gold'}), 200
 
 # Npc interaction route
 @app.route('/npc/<int:npc_id>/interact', methods=['GET'])
@@ -428,15 +461,13 @@ def interact_with_npc(npc_id):
         quests_data = [quest.to_dict() for quest in available_quests]
         return jsonify({'npc_name': npc.name, 'quests': quests_data}), 200
     
-    if npc.role == 'Merchant':
+    elif npc.role == 'Merchant':
         if npc_id == POTION_SHOP_ID:
-            items_data = [item.to_dict() for item in npc.stock if item.type == 'Consumable']
-
+            items_data = [item.custom_serialize() for item in npc.stock if item.type == 'Consumable']
         elif npc_id == BLACKSMITH_ID:
-            items_data = [item.to_dict() for item in npc.stock if item.type in ['Melee Weapon', 'Ranged Weapon', 'Armor', 'Ring', 'Necklace']]
-
+            items_data = [item.custom_serialize() for item in npc.stock if item.type in ['Melee Weapon', 'Ranged Weapon', 'Armor', 'Ring', 'Necklace']]
         else:
-            items_data = [item.to_dict() for item in npc.stock]
+            items_data = [item.custom_serialize() for item in npc.stock]
 
         return jsonify({'npc_name': npc.name, 'items_for_sale': items_data}), 200
     
@@ -455,18 +486,28 @@ def buy_item(npc_id, item_id):
         return jsonify({'message': 'User or character not logged in'}), 401
 
     npc = db.session.get(NPC, npc_id)
-
-    character = db.session.get(Character, session['character_id'])
     item = db.session.get(Item, item_id)
 
-    if item not in npc.stock:
+    character_id = session['character_id']
+    character = db.session.query(Character).options(
+        joinedload(Character.inventory).joinedload(CharacterItem.item)
+    ).filter(Character.id == character_id).one_or_none()
+
+    if not npc or item not in npc.stock:
         return jsonify({'message': 'Item not available from this NPC'}), 404
 
     if character.gold < item.price:
         return jsonify({'message': 'Not enough gold'}), 400
 
+    character_item = CharacterItem.query.filter_by(character_id=character.id, item_id=item.id).first()
+
+    if character_item:
+        character_item.quantity += 1
+    else:
+        new_character_item = CharacterItem(character_id=character.id, item_id=item.id)
+        db.session.add(new_character_item)
+
     character.gold -= item.price
-    character.inventory.append(item)
     db.session.commit()
 
     return jsonify({'message': f'Bought {item.name} for {item.price} gold'}), 200
@@ -632,18 +673,52 @@ def update_stats(character, item, apply_bonus=True):
         else:
             setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) - bonus)
 
+@app.route('/character/<int:character_id>/use_consumable', methods=['POST'])
+def use_consumable(character_id):
+    data = request.json
+    item_id = data.get('itemId')
+
+    character = db.session.get(Character, character_id)
+    if character is None:
+        return jsonify({'message': 'Character not found'}), 404
+
+    # Call the existing logic to handle consumable use
+    return handle_consumable_use(character, item_id)
+
+# Use Consumable route
 def handle_consumable_use(character, item_id):
-    consumable = next((item for item in character.inventory if item.id == item_id and item.type == 'Consumable'), None)
+    consumable = next((char_item for char_item in character.inventory 
+                       if char_item.item_id == item_id and char_item.item.type == 'Consumable'), None)
+
     if not consumable:
         return jsonify({'message': 'Invalid or unavailable consumable'}), 404
 
-    if consumable.name == 'Health Potion':
-        character.current_hp += 20
-        character.current_hp = min(character.current_hp, character.max_hp)
+    potion_healing = {
+        'Bread': 0.05,
+        'Health Potion': 0.10,
+        'Super Health Potion': 0.20,
+        'Ultra Health Potion': 0.30,
+        'Perfect Health Potion': 0.40,
+        'Godly Health Potion': 0.50,
+        'Full Heal Potion': 1.00
+    }
 
-    character.inventory.remove(consumable)
+    healing_percentage = potion_healing.get(consumable.item.name)
+    if healing_percentage is None:
+        return jsonify({'message': 'Invalid potion name'}), 400
+
+    if consumable.item.name == 'Full Heal Potion':
+        character.current_hp = character.max_hp
+    else:
+        heal_amount = round(character.max_hp * healing_percentage)
+        character.current_hp = min(character.current_hp + heal_amount, character.max_hp)
+
+    consumable.quantity -= 1
+    if consumable.quantity <= 0:
+        db.session.delete(consumable)
+
     db.session.commit()
-    return jsonify({'message': f'{consumable.name} used successfully'}), 200
+    return jsonify({'message': f'{consumable.item.name} used successfully, healed {heal_amount} HP'}), 200
 
 # Combat logic for monster route
 @app.route('/monster_combat_action', methods=['POST'])
@@ -963,12 +1038,12 @@ def get_inventory(character_id):
     return jsonify({'inventory': inventory_items, 'equippedItems': equipped_items}), 200
 
 # Swap equipment route
-@app.route('/character/change_equipment', methods=['POST'])
-def change_equipment():
-    if 'user_id' not in session or 'character_id' not in session:
+@app.route('/character/<int:character_id>/change_equipment', methods=['POST'])
+def change_equipment(character_id):
+    if 'user_id' not in session or session.get('character_id') != character_id:
         return jsonify({'message': 'User or character not identified'}), 401
 
-    character = db.session.get(Character, session['character_id'])
+    character = db.session.get(Character, character_id)
     if not character:
         return jsonify({'message': 'Character not found'}), 404
 
@@ -976,10 +1051,6 @@ def change_equipment():
     return handle_equipment_change(character, new_equipment_id)
 
 def handle_equipment_change(character, new_equipment_id):
-    new_equipment = next((item for item in character.inventory if item.id == new_equipment_id), None)
-    if not new_equipment:
-        return jsonify({'message': 'Invalid or unavailable equipment'}), 404
-
     equipment_slots = {
         'Melee Weapon': 'equipped_melee_weapon',
         'Ranged Weapon': 'equipped_ranged_weapon',
@@ -987,14 +1058,36 @@ def handle_equipment_change(character, new_equipment_id):
         'Ring': 'equipped_ring',
         'Necklace': 'equipped_necklace'
     }
+    stats_to_update = ['strength_bonus', 'vitality_bonus', 'armor_bonus', 'luck_bonus', 'dexterity_bonus', 'speed_bonus']
+
+    new_equipment = db.session.get(Item, new_equipment_id)
+    if not new_equipment:
+        return jsonify({'message': 'Invalid or unavailable equipment'}), 404
 
     slot = equipment_slots.get(new_equipment.type)
-    if slot:
-        swap_equipment(character, slot, new_equipment)
-        db.session.commit()
-        return jsonify({'message': f'Equipped {new_equipment.name} successfully'}), 200
-    else:
+    if not slot:
         return jsonify({'message': 'Unrecognized equipment type'}), 400
+
+    def update_character_stats(character, item, is_adding=True):
+        for stat in stats_to_update:
+            item_stat_value = getattr(item, stat, 0)
+            character_stat_field = stat[:-6]
+            if is_adding:
+                setattr(character, character_stat_field, getattr(character, character_stat_field) + item_stat_value)
+            else:
+                setattr(character, character_stat_field, getattr(character, character_stat_field) - item_stat_value)
+
+    current_equipped_item = getattr(character, slot)
+
+    if current_equipped_item:
+        update_character_stats(character, current_equipped_item, is_adding=False)
+
+    setattr(character, slot, new_equipment)
+    update_character_stats(character, new_equipment, is_adding=True)
+
+    db.session.commit()
+
+    return jsonify({'message': f'Equipped {new_equipment.name} successfully'}), 200
     
 # Combat ending route
 @app.route('/end_combat2', methods=['POST'])

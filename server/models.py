@@ -24,6 +24,23 @@ class CharacterItem(db.Model):
     character = db.relationship('Character', back_populates='inventory')
     item = db.relationship('Item', back_populates='character_items')
 
+    def custom_serialize(self):
+        return {
+            'id': self.item_id,
+            'character_id': self.character_id,
+            'quantity': self.quantity,
+            'item_name': self.item.name,
+            'item_type': self.item.type,
+            'item_rarity': self.item.rarity,
+            'strength_bonus': self.item.strength_bonus,
+            'vitality_bonus': self.item.vitality_bonus,
+            'armor_bonus': self.item.armor_bonus,
+            'luck_bonus': self.item.luck_bonus,
+            'dexterity_bonus': self.item.dexterity_bonus,
+            'speed_bonus': self.item.speed_bonus,
+            'price': self.item.price
+        }
+
 # Helper table for npc stocks
 npc_items = db.Table('npc_items',
     db.Column('npc_id', db.Integer, db.ForeignKey('npc.id'), primary_key=True),

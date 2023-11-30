@@ -5,7 +5,7 @@ const Town = () => {
     const navigate = useNavigate();
 
     return (
-        <div>
+        <div className="town-container">
             <h1>Welcome to Dungydale</h1>
             <button onClick={() => navigate('/town/guildhall')}>Guild Hall</button>
             <button onClick={() => navigate('/town/tavern')}>Tavern</button>

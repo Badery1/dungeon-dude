@@ -43,9 +43,9 @@ const LoginRegister = ({ onLogin }) => {
     };
 
     return (
-        <div>
+        <div className="login-register-container">
             <h2>{isLogin ? 'Login' : 'Register'}</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="login-register-form">
                 <input 
                     type="text" 
                     placeholder="Username" 

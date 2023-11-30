@@ -45,14 +45,18 @@ const PlayerInfo = ({ characterId }) => {
     };
 
     return (
-        <div>
-            <h3>Player Info</h3>
-            <p>Gold: {playerData.gold}</p>
-            <p>XP: {playerData.exp} / {playerData.required_exp}</p>
-            <p>Level: {playerData.level}</p>
-            <p>HP: {playerData.current_hp} / {playerData.max_hp}</p>
-            <button onClick={handleInventoryClick}>Inventory</button>
-            <button onClick={handleQuestsClick}>Quests</button>
+        <div className="player-info-container">
+            <h3 className="player-info-title">Player Info</h3>
+            <div className="player-info-details">
+                <p>Gold: {playerData.gold}</p>
+                <p>XP: {playerData.exp} / {playerData.required_exp}</p>
+                <p>Level: {playerData.level}</p>
+                <p>HP: {playerData.current_hp} / {playerData.max_hp}</p>
+            </div>
+            <div className="player-info-buttons">
+                <button onClick={handleInventoryClick}>Inventory</button>
+                <button onClick={handleQuestsClick}>Quests</button>
+            </div>
 
             {showInventoryModal && (
                 <Modal onClose={() => setShowInventoryModal(false)}>

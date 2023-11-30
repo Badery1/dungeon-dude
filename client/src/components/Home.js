@@ -34,11 +34,11 @@ const Home = () => {
     };
 
     return (
-        <div>
+        <div className="home-container">
             <h1>Welcome Home</h1>
             <button onClick={handleSaveGame}>Save Game</button>
             <button onClick={handleRest}>Rest and Heal</button>
-            {isFeedbackVisible && <p>{feedbackMessage}</p>}
+            {isFeedbackVisible && <p className="feedback-message">{feedbackMessage}</p>}
         </div>
     );
 };

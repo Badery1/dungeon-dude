@@ -21,10 +21,13 @@ const Intro = () => {
                 setCurrentStage(currentStage + 1);
             }, 3000);
             return () => clearTimeout(timer);
-        } else {
-            setShowStartButton(true);
+        } else if (!showStartButton) {
+            const buttonTimer = setTimeout(() => {
+                setShowStartButton(true);
+            }, 7000);
+            return () => clearTimeout(buttonTimer);
         }
-    }, [currentStage, storyText]);
+    }, [currentStage, showStartButton, storyText.length]);
 
     const handleStartGame = async () => {
         try {
@@ -37,13 +40,13 @@ const Intro = () => {
     };
 
     return (
-        <div>
+        <div className="intro-container">
             <h1>Welcome To Dungeon Dude</h1>
             {storyText.slice(0, currentStage).map((line, index) => (
-                <p key={index}>{line}</p>
+                <p key={index} className="intro-line" style={{ animationDelay: `${index * 2}s` }}>{line}</p>
             ))}
             {showStartButton && (
-                <button onClick={handleStartGame}>Start Game</button>
+                <button onClick={handleStartGame} className="intro-button">Start Game</button>
             )}
         </div>
     );

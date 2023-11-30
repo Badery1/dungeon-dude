@@ -170,16 +170,18 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
     };
 
     return (
-        <div>
+        <div className="combat-container">
             {monster && (
-                <>
+                <div className="combat-header">
                     <h2>Floor {monster.level} Combat</h2>
-                    <p>{monster.name} - HP: {monster.current_hp} / {monster.max_hp}</p>
-                </>
+                    <div className="monster-info">
+                        <p>{monster.name} - HP: {monster.current_hp} / {monster.max_hp}</p>
+                    </div>
+                </div>
             )}
-    
+
             {combatEnded && monster && (
-                <div>
+                <div className="combat-options">
                     {monster.level < 100 && (
                         <button onClick={handleNextFloor}>Next Floor</button>
                     )}
@@ -187,16 +189,16 @@ const Combat = ({ characterId, enterCombat, exitCombat }) => {
                     <button onClick={handleReturnToDungeonEntrance}>Return to Dungeon Entrance</button>
                 </div>
             )}
-    
+
             {!combatEnded && (
-                <div>
+                <div className="combat-options">
                     <button onClick={() => handlePlayerAction('Attack Melee')} disabled={!isPlayersTurn}>Melee Attack</button>
                     <button onClick={() => handlePlayerAction('Attack Ranged')} disabled={!isPlayersTurn}>Ranged Attack</button>
                     <button onClick={() => handlePlayerAction('Flee')} disabled={!isPlayersTurn}>Flee</button>
                 </div>
             )}
-    
-            <div>
+
+            <div className="combat-log">
                 <h3>Combat Log</h3>
                 {combatLog.map((log, index) => <p key={index}>{log}</p>)}
             </div>

@@ -22,9 +22,9 @@ const CharacterCreation = ({ userId }) => {
     };
 
     return (
-        <div>
+        <div className="character-creation-container">
             <h1>Create New Character</h1>
-            <form onSubmit={handleCharacterCreation}>
+            <form onSubmit={handleCharacterCreation} className="character-creation-form">
                 <input 
                     type="text"
                     placeholder="Character Name"

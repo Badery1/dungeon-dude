@@ -35,7 +35,7 @@ const Dungeon = ({ characterId, enterCombat, exitCombat }) => {
     };
 
     return (
-        <div>
+        <div className="dungeon-container">
             <h1>Dungeon</h1>
             <button onClick={toggleFloorMenu}>
                 {showFloorMenu ? 'Hide Floors' : 'Select Floor'}
@@ -44,14 +44,16 @@ const Dungeon = ({ characterId, enterCombat, exitCombat }) => {
             {showFloorMenu && (
                 <div>
                     <p>Choose a Floor:</p>
-                    {[...Array(highestAccessibleFloor)].map((_, index) => (
-                        <button 
-                            key={index + 1} 
-                            onClick={() => handleFloorSelect(index + 1)}
-                        >
-                            Floor {index + 1}
-                        </button>
-                    ))}
+                    <div className="dungeon-floor-buttons">
+                        {[...Array(highestAccessibleFloor)].map((_, index) => (
+                            <button 
+                                key={index + 1} 
+                                onClick={() => handleFloorSelect(index + 1)}
+                            >
+                                Floor {index + 1}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

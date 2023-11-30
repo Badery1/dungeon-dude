@@ -55,10 +55,10 @@ const CharacterSelection = ({ onSelectCharacter }) => {
     };
 
     return (
-        <div>
+        <div className="character-selection-container">
             <h1>Select Your Character</h1>
             {characters.map((character) => (
-                <div key={character.id}>
+                <div key={character.id} className="character-item">
                     <h2 onClick={() => handleCharacterSelect(character)}>{character.name}</h2>
                     <input 
                         type="text" 
@@ -68,7 +68,11 @@ const CharacterSelection = ({ onSelectCharacter }) => {
                     <button onClick={() => handleDeleteCharacter(character.id)}>Delete</button>
                 </div>
             ))}
-            <button onClick={() => navigate('/character-creation')}>Create New Character</button>
+            <button 
+                onClick={() => navigate('/character-creation')}
+                className="character-selection-create-btn">
+                Create New Character
+            </button>
         </div>
     );
 };

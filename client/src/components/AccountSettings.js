@@ -50,7 +50,7 @@ const AccountSettings = () => {
     };
 
     return (
-        <div>
+        <div className="account-settings-container">
             <h2>Account Settings</h2>
             <form onSubmit={handleSubmit}>
                 <input 
@@ -67,7 +67,10 @@ const AccountSettings = () => {
                 />
                 <button type="submit">Update Account</button>
             </form>
-            <button onClick={handleDeleteAccount} style={{ backgroundColor: 'red', color: 'white' }}>
+            <button 
+                onClick={handleDeleteAccount} 
+                className="delete-account"
+            >
                 Delete Account
             </button>
         </div>
