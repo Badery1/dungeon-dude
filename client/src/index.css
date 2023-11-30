@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,19 +12,18 @@
 }
 
 .modal-content {
-    background-color: rgb(38, 34, 34); /* Dark grey background for modal */
+    background-color: rgb(38, 34, 34);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(60, 60, 60, 0.5);
-    color: rgb(24, 208, 208); /* Teal text color */
+    color: rgb(24, 208, 208);
     width: 80%;
-    max-width: 600px; /* Maximum width of modal */
+    max-width: 600px;
 }
 
-/* Add more styles for buttons and other elements inside modal */
 .modal-content button {
-    background-color: darksilver; /* Dark silver background for buttons */
-    color: teal; /* White text on buttons */
+    background-color: darksilver;
+    color: teal;
     border: none;
     padding: 8px 15px;
     margin: 5px;
@@ -34,10 +33,9 @@
 }
 
 .modal-content button:hover {
-    background-color: rgb(18, 193, 193); /* Teal color on hover */
+    background-color: rgb(18, 193, 193);
 }
 
-/* Style for the inventory list inside the modal */
 .modal-content ul {
     list-style: none;
     padding: 0;
@@ -48,8 +46,8 @@
 }
 
 .login-register-container {
-    background-color: #1a1a1a; /* Dark grey background */
-    color: #d9d9d9; /* Dark silver text */
+    background-color: #1a1a1a;
+    color: #d9d9d9;
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
@@ -72,17 +70,15 @@
 }
 
 .login-register-form button {
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     width: 80%;
     margin-bottom: 10px;
 }
 
-/* Hover effect for buttons */
 .login-register-form button:hover {
-    background-color: #30b9b9; /* Darker teal */
+    background-color: #30b9b9;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .login-register-container {
         width: 90%;
@@ -91,8 +87,8 @@
 }
 
 .character-selection-container {
-    background-color: #1a1a1a; /* Dark grey background */
-    color: #d9d9d9; /* Dark silver text */
+    background-color: #1a1a1a;
+    color: #d9d9d9;
     max-width: 500px;
     margin: 50px auto;
     padding: 20px;
@@ -101,11 +97,11 @@
 }
 
 .character-selection-create-btn {
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
-    color: #d9d9d9; /* Dark silver text */
+    color: #d9d9d9;
     cursor: pointer;
     margin-top: 15px;
     display: block;
@@ -114,18 +110,18 @@
 }
 
 .character-selection-create-btn:hover {
-    background-color: #004d4d; /* Darker teal */
+    background-color: #004d4d;
 }
 
 .character-item {
-    border-bottom: 1px solid #d9d9d9; /* Dark silver border */
+    border-bottom: 1px solid #d9d9d9;
     padding: 10px;
     margin-bottom: 15px;
 }
 
 .character-item h2 {
     cursor: pointer;
-    color: #008080; /* Teal color */
+    color: #008080;
     margin-bottom: 5px;
 }
 
@@ -133,14 +129,14 @@
     width: 80%;
     padding: 10px;
     margin-bottom: 5px;
-    border: 1px solid #008080; /* Teal border */
+    border: 1px solid #008080;
     border-radius: 5px;
-    background: #262626; /* Slightly lighter grey */
-    color: #d9d9d9; /* Dark silver text */
+    background: #262626;
+    color: #d9d9d9;
 }
 
 .character-item button {
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     border: none;
     padding: 10px;
     border-radius: 5px;
@@ -148,10 +144,9 @@
 }
 
 .character-item button:hover {
-    background-color: #004d4d; /* Darker teal */
+    background-color: #004d4d;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .character-selection-container {
         width: 90%;
@@ -160,8 +155,8 @@
 }
 
 .character-creation-container {
-    background-color: #1a1a1a; /* Dark grey background */
-    color: #d9d9d9; /* Dark silver text */
+    background-color: #1a1a1a;
+    color: #d9d9d9;
     max-width: 500px;
     margin: 50px auto;
     padding: 20px;
@@ -179,26 +174,25 @@
     width: 80%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #008080; /* Teal border */
+    border: 1px solid #008080;
     border-radius: 5px;
-    background: #262626; /* Slightly lighter grey */
-    color: #d9d9d9; /* Dark silver text */
+    background: #262626;
+    color: #d9d9d9;
 }
 
 .character-creation-form button {
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
-    color: #d9d9d9; /* Dark silver text */
+    color: #d9d9d9;
     cursor: pointer;
 }
 
 .character-creation-form button:hover {
-    background-color: #004d4d; /* Darker teal */
+    background-color: #004d4d;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .character-creation-container {
         width: 90%;
@@ -207,7 +201,7 @@
 }
 
 nav {
-    background-color: #2f2f2f; /* Dark grey background */
+    background-color: #2f2f2f;
     padding: 10px 0;
 }
 
@@ -224,11 +218,11 @@ nav ul li {
 }
 
 nav button {
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
-    color: #d9d9d9; /* Dark silver text */
+    color: #d9d9d9;
     cursor: pointer;
     font-size: 1rem;
     text-transform: uppercase;
@@ -236,10 +230,9 @@ nav button {
 }
 
 nav button:hover {
-    background-color: #004d4d; /* Darker teal */
+    background-color: #004d4d;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
@@ -251,12 +244,12 @@ nav button:hover {
 
 .intro-container {
     text-align: center;
-    color: #d9d9d9; /* Dark silver text */
-    background-color: #2f2f2f; /* Dark grey background */
+    color: #d9d9d9;
+    background-color: #2f2f2f;
     padding: 20px;
     border-radius: 10px;
-    height: 400px; /* Fixed height */
-    overflow-y: auto; /* Allows scrolling if text overflows */
+    height: 400px;
+    overflow-y: auto;
 }
 
 .intro-line {
@@ -271,11 +264,11 @@ nav button:hover {
 }
 
 .intro-button {
-    background-color: #008080; /* Teal background */
+    background-color: #008080;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
-    color: #d9d9d9; /* Dark silver text */
+    color: #d9d9d9;
     cursor: pointer;
     font-size: 1rem;
     text-transform: uppercase;
@@ -290,8 +283,8 @@ nav button:hover {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.75); /* Semi-transparent black background */
-    color: rgb(36, 207, 207); /* Teal text color */
+    background: rgba(0, 0, 0, 0.75);
+    color: rgb(36, 207, 207);
     padding: 15px;
     border-radius: 10px;
     width: 300px;
@@ -311,8 +304,8 @@ nav button:hover {
     width: 100%;
     margin: 5px 0;
     padding: 5px;
-    background-color: darkgrey; /* Dark grey background for buttons */
-    color: white; /* White text on buttons */
+    background-color: darkgrey;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -320,7 +313,7 @@ nav button:hover {
 }
 
 .player-info-buttons button:hover {
-    background-color: darksilver; /* Dark silver color on hover */
+    background-color: darksilver;
 }
 
 .account-settings-container {
@@ -336,10 +329,10 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    color: #cfd8dc; /* Light grey for text */
-    background-color: #263238; /* Dark grey background */
+    color: #cfd8dc;
+    background-color: #263238;
     border-radius: 10px;
-    max-width: 400px; /* Adjust as necessary */
+    max-width: 400px;
     margin: auto;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 }
@@ -361,9 +354,9 @@ nav button:hover {
     margin-bottom: 15px;
     border-radius: 5px;
     border: 1px solid darksilver;
-    width: 80%; /* Adjust as necessary */
-    background-color: #37474f; /* Darker input background */
-    color: white; /* Light text for visibility */
+    width: 80%;
+    background-color: #37474f;
+    color: white;
 }
 
 .account-settings-container button {
@@ -375,16 +368,16 @@ nav button:hover {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
-    width: 80%; /* Consistent width with input */
+    width: 80%;
 }
 
 .account-settings-container button:hover {
-    background-color: #006064; /* Dark teal for hover */
+    background-color: #006064;
     color: white;
 }
 
 .account-settings-container button.delete-account {
-    background-color: #d32f2f; /* Darker red */
+    background-color: #d32f2f;
     margin-top: 20px;
 }
 
@@ -393,13 +386,13 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border: double;
     border-radius: 10px;
-    max-width: 600px; /* Adjust as necessary */
-    height: 400px; /* Fixed height */
-    overflow: auto; /* Enable scrolling for overflow content */
+    max-width: 600px;
+    height: 400px;
+    overflow: auto;
     margin: auto;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 }
@@ -421,13 +414,13 @@ nav button:hover {
 }
 
 .home-container button:hover {
-    background-color: #006064; /* Dark teal for hover */
+    background-color: #006064;
     color: white;
 }
 
 .feedback-message {
     color: teal;
-    font-size: 1.5em; /* Larger text */
+    font-size: 1.5em;
     font-weight: bold;
     margin-top: 20px;
     animation: fadeIn 1s;
@@ -443,8 +436,8 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -453,7 +446,7 @@ nav button:hover {
 }
 
 .town-container button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -465,7 +458,7 @@ nav button:hover {
 }
 
 .town-container button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .guildhall-container {
@@ -473,8 +466,8 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -482,7 +475,7 @@ nav button:hover {
 }
 
 .guildhall-container button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -494,18 +487,18 @@ nav button:hover {
 }
 
 .guildhall-container button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .guildhall-dialogue {
-    background-color: #37474f; /* Slightly darker grey for dialogue background */
+    background-color: #37474f;
     padding: 10px;
     border-radius: 5px;
     margin-top: 20px;
 }
 
 .guildhall-dialogue p {
-    color: #cfd8dc; /* Light grey text for dialogue */
+    color: #cfd8dc;
 }
 
 .guildhall-items {
@@ -522,7 +515,7 @@ nav button:hover {
 }
 
 .guildhall-items li button {
-    background-color: #1e594c; /* Orange color for item buttons */
+    background-color: #1e594c;
     color: white;
     border: none;
     border-radius: 5px;
@@ -532,7 +525,7 @@ nav button:hover {
 }
 
 .guildhall-items li button:hover {
-    background-color: #f4511e; /* Darker shade of orange for hover effect */
+    background-color: #f4511e;
 }
 
 .tavern-container {
@@ -540,8 +533,8 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -549,7 +542,7 @@ nav button:hover {
 }
 
 .tavern-container button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -561,18 +554,18 @@ nav button:hover {
 }
 
 .tavern-container button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .tavern-dialogue {
-    background-color: #37474f; /* Slightly darker grey for dialogue background */
+    background-color: #37474f;
     padding: 10px;
     border-radius: 5px;
     margin-top: 20px;
 }
 
 .tavern-dialogue p {
-    color: #cfd8dc; /* Light grey text for dialogue */
+    color: #cfd8dc;
 }
 
 .tavern-quests {
@@ -580,7 +573,7 @@ nav button:hover {
 }
 
 .tavern-quests h3 {
-    color: #ff5722; /* Orange color for quest titles */
+    color: #ff5722;
 }
 
 .tavern-quests p {
@@ -588,7 +581,7 @@ nav button:hover {
 }
 
 .tavern-quests button {
-    background-color: #22d6ff; /* Orange color for quest buttons */
+    background-color: #22d6ff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -600,7 +593,7 @@ nav button:hover {
 }
 
 .tavern-quests button:hover {
-    background-color: #1e594c; /* Darker shade of orange for hover effect */
+    background-color: #1e594c;
 }
 
 .potion-shop-container {
@@ -608,8 +601,8 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -617,7 +610,7 @@ nav button:hover {
 }
 
 .potion-shop-container button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -629,18 +622,18 @@ nav button:hover {
 }
 
 .potion-shop-container button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .potion-shop-dialogue {
-    background-color: #37474f; /* Slightly darker grey for dialogue background */
+    background-color: #37474f;
     padding: 10px;
     border-radius: 5px;
     margin-top: 20px;
 }
 
 .potion-shop-dialogue p {
-    color: #cfd8dc; /* Light grey text for dialogue */
+    color: #cfd8dc;
 }
 
 .potion-shop-items {
@@ -660,7 +653,7 @@ nav button:hover {
 }
 
 .potion-shop-items button {
-    background-color: #009688; /* Teal color for buy buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -670,7 +663,7 @@ nav button:hover {
 }
 
 .potion-shop-items button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .blacksmith-container {
@@ -678,8 +671,8 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -687,7 +680,7 @@ nav button:hover {
 }
 
 .blacksmith-container button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -699,18 +692,18 @@ nav button:hover {
 }
 
 .blacksmith-container button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .blacksmith-dialogue {
-    background-color: #37474f; /* Slightly darker grey for dialogue background */
+    background-color: #37474f;
     padding: 10px;
     border-radius: 5px;
     margin-top: 20px;
 }
 
 .blacksmith-dialogue p {
-    color: #cfd8dc; /* Light grey text for dialogue */
+    color: #cfd8dc;
 }
 
 .blacksmith-items {
@@ -730,7 +723,7 @@ nav button:hover {
 }
 
 .blacksmith-items button {
-    background-color: #009688; /* Teal color for buy/sell buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
@@ -740,7 +733,7 @@ nav button:hover {
 }
 
 .blacksmith-items button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .dungeon-container {
@@ -748,8 +741,8 @@ nav button:hover {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #263238; /* Dark grey background */
-    color: #cfd8dc; /* Light grey for text */
+    background-color: #263238;
+    color: #cfd8dc;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -757,32 +750,31 @@ nav button:hover {
 }
 
 .dungeon-container button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
     padding: 10px 15px;
-    margin: 5px; /* Add margin between buttons */
+    margin: 5px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
 }
 
 .dungeon-container button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
-/* Create a grid layout for the buttons */
 .dungeon-floor-buttons {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 columns per row */
-    grid-gap: 10px; /* Add gap between buttons */
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 10px;
 }
 
 .combat-container {
     padding: 20px;
-    background-color: #212121; /* Dark background color */
-    color: #fff; /* White text color */
+    background-color: #212121;
+    color: #fff;
     border-radius: 10px;
     max-width: 600px;
     margin: auto;
@@ -799,7 +791,7 @@ nav button:hover {
 }
 
 .monster-info {
-    background-color: #424242; /* Darker grey for monster info */
+    background-color: #424242;
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -816,28 +808,28 @@ nav button:hover {
 }
 
 .combat-options button {
-    background-color: #009688; /* Teal color for buttons */
+    background-color: #009688;
     color: white;
     border: none;
     border-radius: 5px;
     padding: 10px 15px;
-    margin: 0 10px; /* Add margin between buttons */
+    margin: 0 10px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
 }
 
 .combat-options button:disabled {
-    background-color: #666; /* Greyed out color for disabled buttons */
+    background-color: #666;
     cursor: not-allowed;
 }
 
 .combat-options button:hover {
-    background-color: #00796b; /* Darker shade of teal for hover effect */
+    background-color: #00796b;
 }
 
 .combat-log {
-    background-color: #333; /* Dark grey for combat log */
+    background-color: #333;
     padding: 10px;
     border-radius: 5px;
 }
@@ -852,5 +844,5 @@ nav button:hover {
 }
 
 body {
-    background-color: #266b6b; /* Dark grey color code */
+    background-color: #266b6b;
   }

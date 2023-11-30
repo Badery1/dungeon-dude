@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Tavern = () => {
     const [quests, setQuests] = useState([]);
-    const [dialogue, setDialogue] = useState('');
     const [showQuests, setShowQuests] = useState(false);
-    const [showDialogue, setShowDialogue] = useState(false);
     const [showQuestGiverDialogue, setShowQuestGiverDialogue] = useState(false);
     const [isBartenderDialogueVisible, setIsBartenderDialogueVisible] = useState(false);
     const [bartenderDialogue, setBartenderDialogue] = useState('');
