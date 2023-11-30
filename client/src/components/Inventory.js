@@ -18,11 +18,11 @@ const Inventory = ({ characterId, closeModal }) => {
             luck: 0,
             dexterity: 0,
             speed: 0,
-            maxHp: 0,
-            currentHp: 0,
+            max_hp: 0,
+            current_hp: 0,
             level: 0,
             exp: 0,
-            requiredExp: 0,
+            required_exp: 0,
             gold: 0
         }
     });
@@ -32,7 +32,24 @@ const Inventory = ({ characterId, closeModal }) => {
     const fetchPlayerData = useCallback(async () => {
         try {
             const response = await axios.get(`/player_data`);
-            setPlayerData(response.data);
+            const responseData = response.data;
+    
+            // Extracting stats and inventory from the response
+            const { inventory, ...stats } = responseData;
+    
+            // Updating playerData state to match the response structure
+            setPlayerData({
+                inventory: inventory || [],
+                equippedItems: {
+                    meleeWeapon: responseData.equipped_melee_weapon,
+                    rangedWeapon: responseData.equipped_ranged_weapon,
+                    armor: responseData.equipped_armor,
+                    ring: responseData.equipped_ring,
+                    necklace: responseData.equipped_necklace
+                },
+                stats: stats
+            });
+    
             setIsLoading(false);
         } catch (error) {
             console.error('Error fetching player data:', error);
@@ -106,9 +123,9 @@ const Inventory = ({ characterId, closeModal }) => {
                         <p>Luck: {playerData.stats?.luck || 0}</p>
                         <p>Dexterity: {playerData.stats?.dexterity || 0}</p>
                         <p>Speed: {playerData.stats?.speed || 0}</p>
-                        <p>HP: {playerData.stats?.currentHp || 0} / {playerData.stats?.maxHp || 0}</p>
+                        <p>HP: {playerData.stats?.current_hp || 0} / {playerData.stats?.max_hp || 0}</p>
                         <p>Level: {playerData.stats?.level || 0}</p>
-                        <p>XP: {playerData.stats?.exp || 0} / {playerData.stats?.requiredExp || 0}</p>
+                        <p>XP: {playerData.stats?.exp || 0} / {playerData.stats?.required_exp || 0}</p>
                         <p>Gold: {playerData.stats?.gold || 0}</p>
                     </>
                 )}
