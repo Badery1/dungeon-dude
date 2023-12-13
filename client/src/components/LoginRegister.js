@@ -16,7 +16,8 @@ const LoginRegister = ({ onLogin }) => {
         try {
             const response = await axios.post('/register', { username, password });
             console.log(response.data);
-            navigate('/');
+            onLogin();
+            navigate('/character-selection');
         } catch (error) {
             console.error('Registration error:', error.response?.data);
         }

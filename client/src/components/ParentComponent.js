@@ -92,7 +92,7 @@ const ParentComponent = () => {
                             path="/character-selection" 
                             element={<CharacterSelection onSelectCharacter={selectCharacter} />} 
                         />
-                        <Route path="/account-settings" element={<AccountSettings />} />
+                        <Route path="/account-settings" element={<AccountSettings onLogout={handleLogout} />} />
                         <Route 
                             path="/intro" 
                             element={<Intro characterId={selectedCharacterId} />} 

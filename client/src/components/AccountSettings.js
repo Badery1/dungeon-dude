@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const AccountSettings = () => {
+const AccountSettings = ({ onLogout }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [currentUsername, setCurrentUsername] = useState('');
@@ -42,6 +42,7 @@ const AccountSettings = () => {
             try {
                 await axios.delete('/delete_account');
                 alert('Account deleted successfully.');
+                onLogout();
                 navigate('/');
             } catch (error) {
                 console.error('Error deleting account:', error.response?.data);
