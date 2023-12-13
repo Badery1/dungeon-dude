@@ -21,7 +21,7 @@ bcrypt.init_app(app)
 migrate = Migrate(app, db)
 CORS(app, supports_credentials=True)
 
-from models import Character, User, Item, LootTable, NPC, Quest, CharacterQuest, Monster, CharacterItem, calculate_damage_reduction
+from models import Character, User, Item, LootTable, NPC, Quest, CharacterQuest, Monster, CharacterItem, calculate_damage_reduction, calculate_stat
 
 # Register new user route
 @app.route('/register', methods=['POST'])
@@ -668,10 +668,11 @@ def update_stats(character, item, apply_bonus=True):
     modifiers = ['strength_bonus', 'vitality_bonus', 'armor_bonus', 'luck_bonus', 'dexterity_bonus', 'speed_bonus']
     for mod in modifiers:
         bonus = getattr(item, mod)
+        base_stat = mod.replace('_bonus', '')
         if apply_bonus:
-            setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) + bonus)
+            setattr(character, base_stat, getattr(character, base_stat) + bonus)
         else:
-            setattr(character, mod.replace('_bonus', ''), getattr(character, mod.replace('_bonus', '')) - bonus)
+            setattr(character, base_stat, max(0, getattr(character, base_stat) - bonus))
 
 @app.route('/character/<int:character_id>/use_consumable', methods=['POST'])
 def use_consumable(character_id):

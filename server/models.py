@@ -114,7 +114,7 @@ class Character(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_saved = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
-    inventory = db.relationship('CharacterItem', back_populates='character')
+    inventory = db.relationship('CharacterItem', back_populates='character', cascade="delete, delete-orphan")
     quests = db.relationship('CharacterQuest', back_populates='character')
     gold = db.Column(db.Integer, default=0)
 
@@ -168,8 +168,32 @@ class Character(db.Model, SerializerMixin):
             required_exp = calculate_required_exp(self.level)
 
     def level_up(self):
+        current_equipment_bonuses = self.get_current_equipment_bonuses()
         self.level += 1
         self.update_stats_for_level()
+
+        for bonus, value in current_equipment_bonuses.items():
+            setattr(self, bonus, getattr(self, bonus) + value)
+
+    def get_current_equipment_bonuses(self):
+        equipment_slots = ['equipped_melee_weapon', 'equipped_ranged_weapon', 'equipped_armor', 'equipped_ring', 'equipped_necklace']
+        bonuses = {
+            'strength': 0,
+            'vitality': 0,
+            'armor': 0,
+            'luck': 0,
+            'dexterity': 0,
+            'speed': 0
+        }
+    
+        for slot in equipment_slots:
+            equipment = getattr(self, slot)
+            if equipment:
+                for mod in ['strength_bonus', 'vitality_bonus', 'armor_bonus', 'luck_bonus', 'dexterity_bonus', 'speed_bonus']:
+                    base_stat = mod.replace('_bonus', '')
+                    bonuses[base_stat] += getattr(equipment, mod, 0)
+        
+        return bonuses
 
     def update_stats_for_level(self):
         self.strength = calculate_stat(10, 0.05, self.level)
